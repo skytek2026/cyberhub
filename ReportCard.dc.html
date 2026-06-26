@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/styles.css">
+<script src="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/_ds_bundle.js"></script>
+<style>
+  .rc-link { color: var(--text-link); text-decoration: none; font-weight: 600; }
+  .rc-link:hover { text-decoration: underline; color: var(--brand-600); }
+</style>
+</helmet>
+<article style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-lg); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; height:100%;">
+  <div style="padding:20px; display:flex; flex-direction:column; gap:16px; flex:1;">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <h3 style="margin:0; font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text-primary); flex:1;">{{ report.name }}</h3>
+      <button onClick="{{ report.onDelete }}" aria-label="Delete report" style="width:30px; height:30px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-sm); color:var(--danger-500); cursor:pointer;" style-hover="background:var(--danger-050);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+      </button>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:14px;">
+      <svg width="74" height="74" viewBox="0 0 74 74" style="flex-shrink:0; transform:rotate(-90deg);">
+        <circle cx="37" cy="37" r="30" fill="none" stroke="var(--slate-200)" stroke-width="8"></circle>
+        <circle cx="37" cy="37" r="30" fill="none" stroke="{{ report.donutColor }}" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ report.dash }}"></circle>
+      </svg>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="font-size:13px; color:var(--text-secondary);">Risk Score:</span>
+        <span class="ds-badge {{ report.badgeClass }} ds-badge--dot">{{ report.score }}/120</span>
+      </div>
+    </div>
+
+    <p style="margin:0; font-size:13px; line-height:1.5; color:var(--text-secondary); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">{{ report.desc }}</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px 12px;">
+      <div>
+        <div style="font-size:12px; color:var(--text-muted);">Created at:</div>
+        <div style="font-size:13px; color:var(--text-primary); margin-top:2px;">{{ report.createdAt }}</div>
+      </div>
+      <div>
+        <div style="font-size:12px; color:var(--text-muted);">Industry:</div>
+        <div style="font-size:13px; color:var(--text-primary); margin-top:2px;">{{ report.industry }}</div>
+      </div>
+      <div>
+        <div style="font-size:12px; color:var(--text-muted);">Website:</div>
+        <a href="#" class="rc-link" style="font-size:13px; display:inline-flex; align-items:center; gap:4px; margin-top:2px;">{{ report.website }}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"></path></svg>
+        </a>
+      </div>
+      <div>
+        <div style="font-size:12px; color:var(--text-muted);">Countries:</div>
+        <div style="font-size:13px; color:var(--text-primary); margin-top:2px;">{{ report.countries }}</div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:12px; color:var(--text-muted);">Scan Duration:</div>
+      <div style="font-size:13px; color:var(--text-primary); margin-top:2px;">{{ report.scanDuration }}</div>
+    </div>
+    <div>
+      <div style="font-size:12px; color:var(--text-muted);">Report Level:</div>
+      <div style="font-size:13px; color:var(--text-primary); margin-top:2px;">{{ report.reportLevel }}</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="font-size:12px; color:var(--text-muted);">Scan status:</span>
+      <span class="ds-badge ds-badge--success ds-badge--dot">Completed</span>
+    </div>
+  </div>
+
+  <div style="display:flex; border-top:1px solid var(--border-subtle);">
+    <button style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; height:48px; background:transparent; border:0; border-right:1px solid var(--border-subtle); color:var(--text-link); font:600 13px var(--font-sans); cursor:pointer;" style-hover="background:var(--slate-50);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"></path></svg>Download
+    </button>
+    <button style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; height:48px; background:transparent; border:0; color:var(--text-link); font:600 13px var(--font-sans); cursor:pointer;" style-hover="background:var(--slate-50);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path></svg>View
+    </button>
+  </div>
+</article>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:340,&quot;height&quot;:560},&quot;report&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{ name:string; score:number; donutColor:string; dash:string; badgeClass:string; desc:string; createdAt:string; industry:string; website:string; countries:string; scanDuration:string; reportLevel:string; onDelete:()=&gt;void }&quot;}}"></script>
+</body>
+</html>

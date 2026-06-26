@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/styles.css">
+<script src="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/_ds_bundle.js"></script>
+<style>
+  html, body { margin:0; padding:0; }
+  body { background: var(--bg-canvas); }
+  [data-theme="dark"] {
+    --bg-app:#0B1220; --bg-canvas:#0B1220; --bg-surface:#121A2B; --bg-sunken:#0f1626; --bg-muted:#1B2438;
+    --text-primary:#EEF2F8; --text-secondary:#9FB0C7; --text-muted:#73839C;
+    --border-subtle:#1E2A40; --border-default:#26344E; --border-strong:#374864;
+    --slate-50:#162033; --slate-100:#1B2640; --slate-150:#1f2a46; --slate-200:#26344E; --slate-300:#37486a;
+    --white:#121A2B;
+  }
+  .ch-link { color: var(--text-link); text-decoration: none; font-weight: 600; }
+  .ch-link:hover { text-decoration: underline; color: var(--brand-600); }
+  .ch-drawer { transform: translateX(-100%); transition: transform .28s cubic-bezier(0.16,1,0.3,1); }
+  .ch-drawer.is-open { transform: translateX(0); }
+  .ch-scrim { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+  .ch-scrim.is-open { opacity: 1; pointer-events: auto; }
+  .ch-menu { display:none; }
+  .ch-menu.is-open { display:block; }
+  .ch-menu-item { display:flex; align-items:center; gap:10px; padding:10px 14px; font-size:13px; color:var(--text-primary); text-decoration:none; cursor:pointer; background:transparent; border:0; width:100%; font-family:var(--font-sans); }
+  .ch-menu-item:hover { background:var(--slate-50); }
+  .ch-menu-item svg { color:var(--text-muted); flex-shrink:0; }
+  .ch-menu-item.danger { color:var(--danger-700); }
+  .ch-menu-item.danger svg { color:var(--danger-500); }
+  .ch-menu-item.danger:hover { background:var(--danger-050); }
+</style>
+</helmet>
+<div data-theme="{{ themeAttr }}" style="min-height:100vh; background:var(--bg-canvas); font-family:var(--font-sans); color:var(--text-primary); position:relative;">
+
+  <!-- ===== Top bar ===== -->
+  <header style="position:sticky; top:0; z-index:30; height:60px; display:flex; align-items:center; gap:16px; padding:0 20px; background:var(--bg-surface); border-bottom:1px solid var(--border-default);">
+    <button onClick="{{ toggleDrawer }}" aria-label="Open navigation" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+    </button>
+    <h1 style="margin:0; font-family:var(--font-display); font-size:21px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">My Reports</h1>
+    <div style="flex:1;"></div>
+    <div style="position:absolute; left:50%; transform:translateX(-50%); display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 12px; background:var(--slate-100); border:1px solid var(--border-subtle); border-radius:var(--radius-pill); font-family:var(--font-mono); font-size:12px; color:var(--text-secondary);">AllReportsPage.tsx</div>
+    <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg>
+    </button>
+    <div style="position:relative;">
+      <button onClick="{{ toggleMenu }}" aria-label="Account menu" style="width:34px; height:34px; border:0; padding:0; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+      </button>
+      <div onClick="{{ closeMenu }}" class="ch-menu {{ menuCls }}" style="position:fixed; inset:0; z-index:55;"></div>
+      <div class="ch-menu {{ menuCls }}" style="position:absolute; top:46px; right:0; z-index:56; width:228px; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-lg); box-shadow:var(--card-shadow-raised); overflow:hidden;">
+        <div style="padding:12px 14px; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; flex-shrink:0;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Alex Morgan</div>
+            <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">alex.morgan@skytek.com</div>
+          </div>
+        </div>
+        <a href="#" class="ch-menu-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>My Profile
+        </a>
+        <a href="index.html" class="ch-menu-item danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main style="max-width:1480px; margin:0 auto; padding:28px 28px 8px;">
+
+    <!-- Toolbar -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
+      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-secondary);">
+        <span>Show:</span>
+        <select class="ds-input ds-select" value="{{ shown }}" onChange="{{ onShow }}" style="width:78px; height:34px;">
+          <option value="4">4</option>
+          <option value="8">8</option>
+          <option value="12">12</option>
+        </select>
+        <span>reports</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="ds-search-input" style="min-width:260px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm10 2-4.35-4.35"></path></svg>
+          <input type="text" placeholder="Search reports by company" value="{{ search }}" onInput="{{ onSearch }}" style="height:38px;">
+        </div>
+        <select class="ds-input ds-select" value="{{ riskFilter }}" onChange="{{ onRisk }}" style="width:150px; height:38px;">
+          <option value="all">All Risk Levels</option>
+          <option value="low">Low Risk</option>
+          <option value="medium">Medium Risk</option>
+          <option value="high">High Risk</option>
+        </select>
+        <select class="ds-input ds-select" value="{{ levelFilter }}" onChange="{{ onLevel }}" style="width:140px; height:38px;">
+          <option value="all">All Levels</option>
+          <option value="Level 1">Level 1</option>
+          <option value="Level 2">Level 2</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Report grid -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; align-items:stretch;">
+      <sc-for list="{{ visibleReports }}" as="r" hint-placeholder-count="8">
+        <dc-import name="ReportCard" report="{{ r }}" hint-size="100%,560px"></dc-import>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div class="ds-empty" style="margin-top:8px;">
+        <div class="ds-empty-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm10 2-4.35-4.35"></path></svg>
+        </div>
+        <h4>No reports found</h4>
+        <p>Try adjusting your search or filters.</p>
+      </div>
+    </sc-if>
+
+    <!-- Footer of list -->
+    <div style="text-align:center; margin:30px 0 8px; font-size:13px; color:var(--text-secondary);">Showing {{ shownCount }} of {{ filteredCount }} reports</div>
+    <sc-if value="{{ showLoadMore }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; justify-content:center; margin-bottom:8px;">
+        <button onClick="{{ loadMore }}" class="ds-btn ds-btn--secondary ds-btn--lg" style="height:42px; padding:0 24px;">Load More Reports</button>
+      </div>
+    </sc-if>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer style="max-width:1480px; margin:0 auto; padding:24px 28px 32px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--text-muted);">
+    <a href="#" class="ch-link">About Skytek</a>
+    <div>© 2025 Skytek Limited&nbsp;&nbsp;|&nbsp;&nbsp;Powered by <a href="#" class="ch-link">skytek</a></div>
+  </footer>
+
+  <!-- ===== Sidebar drawer + scrim ===== -->
+  <div onClick="{{ closeDrawer }}" class="ch-scrim {{ drawerCls }}" style="position:fixed; inset:0; z-index:40; background:rgba(15,23,42,.45);"></div>
+  <aside class="ch-drawer {{ drawerCls }}" style="position:fixed; top:0; left:0; bottom:0; z-index:50; width:300px; background:var(--bg-surface); border-right:1px solid var(--border-default); box-shadow:var(--card-shadow-raised); display:flex; flex-direction:column; overflow-y:auto;">
+    <div style="display:flex; align-items:center; gap:10px; padding:20px 18px 16px;">
+      <div style="width:40px; height:40px; border-radius:10px; background:radial-gradient(circle at 35% 30%, var(--brand-400), var(--brand-700)); display:grid; place-items:center; flex-shrink:0; box-shadow:0 4px 10px rgba(31,95,199,.3);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path></svg>
+      </div>
+      <div style="flex:1; line-height:1;">
+        <div style="font-family:var(--font-display); font-weight:700; font-size:18px; letter-spacing:.02em; color:var(--text-primary);">CYBER <span style="font-weight:400; color:var(--text-secondary);">Hub</span></div>
+        <div style="font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-muted); margin-top:3px;">powered by Skytek</div>
+      </div>
+      <button onClick="{{ closeDrawer }}" aria-label="Close navigation" style="width:30px; height:30px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-muted); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <nav style="padding:8px 14px; display:flex; flex-direction:column; gap:4px;">
+      <a href="Dashboard.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg>Dashboard
+      </a>
+      <a href="Reports.html" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); background:var(--brand-600); color:#fff; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 2px 6px rgba(45,127,251,.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8"></path></svg>Reports
+      </a>
+      <a href="SystemicRisk.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Systemic Risk
+      </a>
+      <a href="Companies.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"></path></svg>Companies
+      </a>
+    </nav>
+
+    <div style="padding:18px 18px 6px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">My Report Activity</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; background:var(--slate-50); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:{{ stat.bg }}; color:{{ stat.fg }};">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ stat.icon }}"></path></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:11.5px; color:var(--text-muted);">{{ stat.label }}</div>
+              <div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">{{ stat.value }}</div>
+              <div style="font-size:10.5px; color:var(--text-muted);">{{ stat.sub }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="padding:18px 18px 24px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">Subscription Details</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--info-100); color:var(--info-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription Start</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2024</div></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--danger-100); color:var(--danger-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription End</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2025</div></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    drawerOpen: false,
+    menuOpen: false,
+    dark: false,
+    search: "",
+    riskFilter: "all",
+    levelFilter: "all",
+    shown: 8,
+    reports: [
+      { id: 1, name: "Fiexa", score: 86, desc: "Fiexa is a global fintech and payments company with solutions for banking, global commerce, merchant acquiring, billing and payments, and point-of-sale\u2026", createdAt: "2024-06-08", industry: "Financial and utilities services", website: "fiexa.com", countries: "North America", scanDuration: "2 hours 45 minutes", reportLevel: "Level 1" },
+      { id: 2, name: "Hackerworld", score: 130, desc: "All your entertainment needs under one digital roof with tickets for theatre, concerts, sport, family events, clubs and more\u2026", createdAt: "2024-05-30", industry: "Media, leisure, entertainment", website: "hackerworld.ie", countries: "Ireland", scanDuration: "1 hour 30 minutes", reportLevel: "Level 2" },
+      { id: 3, name: "Meridian Media", score: 52, desc: "Meridian Media brings you the latest national news, world news, international news and up to the minute reports on breaking Irish news stories and news from around the world. Watch and listen to\u2026", createdAt: "2024-05-28", industry: "Media, leisure, entertainment", website: "meridianmedia.com", countries: "Ireland", scanDuration: "3 hours 15 minutes", reportLevel: "Level 1" },
+      { id: 4, name: "Coreware Systems", score: 70, desc: "Coreware Systems is a multinational technology company that develops, manufactures, licenses, supports, and sells computer software, consumer electronics, personal computers, and related services\u2026", createdAt: "2024-06-15", industry: "IT, technology and telecoms", website: "coreware.com", countries: "Worldwide", scanDuration: "4 hours 12 minutes", reportLevel: "Level 2" },
+      { id: 5, name: "Vertex Commerce", score: 83, desc: "Vertex Commerce is a multinational technology company focusing on e-commerce, cloud computing, digital streaming, and artificial intelligence. It is one of the Big Five companies in the U.S. information technology\u2026", createdAt: "2024-06-12", industry: "IT, technology and telecoms", website: "vertexcommerce.com", countries: "Worldwide", scanDuration: "5 hours 30 minutes", reportLevel: "Level 1" },
+      { id: 6, name: "Nucleus Devices", score: 37, desc: "Nucleus Devices is a multinational technology company that specializes in consumer electronics, computer software, and online services. It is among the world's largest technology firms by revenue\u2026", createdAt: "2024-06-10", industry: "IT, technology and telecoms", website: "nucleusdevices.com", countries: "Worldwide", scanDuration: "3 hours 45 minutes", reportLevel: "Level 2" },
+      { id: 7, name: "Quantyx", score: 54, desc: "Quantyx is a multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing\u2026", createdAt: "2024-06-05", industry: "IT, technology and telecoms", website: "quantyx.com", countries: "Worldwide", scanDuration: "2 hours 20 minutes", reportLevel: "Level 1" },
+      { id: 8, name: "Voltic Motors", score: 134, desc: "Voltic Motors is an electric vehicle and clean energy company that designs and manufactures electric vehicles, battery energy storage systems, and solar panels\u2026", createdAt: "2024-06-01", industry: "Automotive and transport", website: "volticmotors.com", countries: "Worldwide", scanDuration: "1 hour 55 minutes", reportLevel: "Level 2" },
+      { id: 9, name: "Streamline", score: 46, desc: "Streamline is a global streaming entertainment service with TV series, documentaries, and feature films across a wide variety of genres and languages. Members can watch as much as they want, anytime\u2026", createdAt: "2024-06-18", industry: "Media, leisure, entertainment", website: "streamline.com", countries: "Worldwide", scanDuration: "2 hours 10 minutes", reportLevel: "Level 1" },
+      { id: 10, name: "Soundwave", score: 61, desc: "Soundwave is a digital music, podcast, and video streaming service that gives access to millions of songs and other content from creators all over the world\u2026", createdAt: "2024-06-03", industry: "Media, leisure, entertainment", website: "soundwave.com", countries: "Worldwide", scanDuration: "2 hours 5 minutes", reportLevel: "Level 1" },
+      { id: 11, name: "PayBridge", score: 58, desc: "PayBridge is a financial infrastructure platform for businesses, used to accept payments, send payouts, and manage online commerce at scale across the globe\u2026", createdAt: "2024-05-25", industry: "Financial and utilities services", website: "paybridge.com", countries: "Worldwide", scanDuration: "3 hours 5 minutes", reportLevel: "Level 2" },
+      { id: 12, name: "Marketly", score: 112, desc: "Marketly is a commerce platform that lets merchants build online stores, manage inventory, and sell across web, mobile, and retail channels worldwide\u2026", createdAt: "2024-05-20", industry: "IT, technology and telecoms", website: "marketly.com", countries: "Worldwide", scanDuration: "4 hours 0 minutes", reportLevel: "Level 1" },
+    ],
+  };
+
+  removeReport(id) {
+    this.setState(s => ({ reports: s.reports.filter(r => r.id !== id) }));
+  }
+
+  riskBand(score) { return score >= 120 ? "high" : score >= 60 ? "medium" : "low"; }
+
+  riskStyle(score) {
+    if (score >= 120) return { donutColor: "var(--danger-500)", badgeClass: "ds-badge--danger" };
+    if (score >= 60)  return { donutColor: "var(--warning-500)", badgeClass: "ds-badge--warning" };
+    return { donutColor: "var(--success-500)", badgeClass: "ds-badge--success" };
+  }
+
+  renderVals() {
+    const C = 2 * Math.PI * 30;
+    const q = this.state.search.trim().toLowerCase();
+
+    const filtered = this.state.reports.filter(r => {
+      if (q && !r.name.toLowerCase().includes(q)) return false;
+      if (this.state.riskFilter !== "all" && this.riskBand(r.score) !== this.state.riskFilter) return false;
+      if (this.state.levelFilter !== "all" && r.reportLevel !== this.state.levelFilter) return false;
+      return true;
+    });
+
+    const visible = filtered.slice(0, this.state.shown).map(r => {
+      const len = Math.min(r.score / 120, 1) * C;
+      return { ...r, ...this.riskStyle(r.score), dash: len.toFixed(1) + " " + C.toFixed(1), onDelete: () => this.removeReport(r.id) };
+    });
+
+    const stats = [
+      { label: "Reports Generated", value: "8", sub: "", icon: "M3 3v18h18M18 17V9M13 17V5M8 17v-3", bg: "var(--brand-100)", fg: "var(--brand-600)" },
+      { label: "Avg. Scan Time", value: "2h 45m", sub: "", icon: "M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z", bg: "var(--success-100)", fg: "var(--success-700)" },
+      { label: "Total Monthly Allowance", value: "50 Hours", sub: "", icon: "M10 2h4M12 14l2.5-2.5M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z", bg: "#EDE4FE", fg: "#7C3AED" },
+      { label: "Time Remaining", value: "28h 15m", sub: "Renews Dec 1, 2024", icon: "M5 22h14M5 2h14M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4A2 2 0 0 0 7 17.8V22", bg: "var(--warning-100)", fg: "var(--warning-700)" },
+    ];
+
+    const open = this.state.drawerOpen;
+    return {
+      visibleReports: visible,
+      stats,
+      shownCount: visible.length,
+      filteredCount: filtered.length,
+      showLoadMore: visible.length < filtered.length,
+      isEmpty: filtered.length === 0,
+      search: this.state.search,
+      shown: String(this.state.shown),
+      riskFilter: this.state.riskFilter,
+      levelFilter: this.state.levelFilter,
+      onSearch: (e) => this.setState({ search: e.target.value }),
+      onRisk: (e) => this.setState({ riskFilter: e.target.value }),
+      onLevel: (e) => this.setState({ levelFilter: e.target.value }),
+      onShow: (e) => this.setState({ shown: Number(e.target.value) }),
+      loadMore: () => this.setState(s => ({ shown: s.shown + 4 })),
+      themeAttr: this.state.dark ? "dark" : "",
+      themeIcon: this.state.dark
+        ? "M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+        : "M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z",
+      drawerCls: open ? "is-open" : "",
+      menuCls: this.state.menuOpen ? "is-open" : "",
+      toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      closeDrawer: () => this.setState({ drawerOpen: false }),
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      toggleTheme: () => this.setState(s => ({ dark: !s.dark })),
+    };
+  }
+}
+</script>
+</body>
+</html>

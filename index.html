@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/styles.css">
+<script src="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/_ds_bundle.js"></script>
+<style>
+  html, body { margin:0; padding:0; }
+  .lg-link { color:#4d96ff; text-decoration:none; font-weight:600; }
+  .lg-link:hover { text-decoration:underline; color:#6fa8ff; }
+  .lg-input { width:100%; height:46px; border:1px solid rgba(255,255,255,0.14); border-radius:5px; background:rgba(228,233,243,0.92); padding:0 14px; font-size:14px; font-family:var(--font-sans); color:#1F2937; outline:0; transition:box-shadow .15s ease, border-color .15s ease; }
+  .lg-input::placeholder { color:#9aa3b2; }
+  .lg-input:focus { border-color:#4d96ff; box-shadow:0 0 0 3px rgba(77,150,255,0.3); }
+  @keyframes lg-pulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+</style>
+</helmet>
+<div style="position:relative; min-height:100vh; display:grid; place-items:center; background:radial-gradient(ellipse 90% 80% at 50% 38%, #15224a 0%, #0a1430 46%, #050912 100%); font-family:var(--font-sans); overflow:hidden;">
+
+  <!-- Background layers -->
+  <div style="position:absolute; inset:0; background-image:radial-gradient(circle, rgba(186,205,240,0.24) 1.1px, transparent 1.7px); background-size:15px 15px; -webkit-mask-image:radial-gradient(ellipse 72% 70% at 50% 44%, #000 28%, transparent 82%); mask-image:radial-gradient(ellipse 72% 70% at 50% 44%, #000 28%, transparent 82%); opacity:.75;"></div>
+  <div style="position:absolute; inset:0; background-image:linear-gradient(rgba(120,150,210,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(120,150,210,0.05) 1px, transparent 1px); background-size:130px 130px;"></div>
+  <!-- diagonal scan lines -->
+  <div style="position:absolute; inset:-40%; background-image:linear-gradient(58deg, transparent 48%, rgba(120,160,230,0.07) 49%, transparent 51%), linear-gradient(-58deg, transparent 48%, rgba(120,160,230,0.06) 49%, transparent 51%); background-size:520px 520px;"></div>
+
+  <!-- red alert markers -->
+  <div style="position:absolute; top:9%; left:43%; width:14px; height:14px; border:1.5px solid rgba(225,45,55,0.85); box-shadow:0 0 10px rgba(225,45,55,0.55); animation:lg-pulse 3s ease-in-out infinite;"></div>
+  <div style="position:absolute; top:21%; left:78%; width:11px; height:11px; border:1.5px solid rgba(225,45,55,0.75); box-shadow:0 0 8px rgba(225,45,55,0.45); animation:lg-pulse 3.6s ease-in-out infinite;"></div>
+  <div style="position:absolute; top:58%; left:9%; width:13px; height:13px; border:1.5px solid rgba(225,45,55,0.7); box-shadow:0 0 9px rgba(225,45,55,0.4); animation:lg-pulse 4.2s ease-in-out infinite;"></div>
+  <div style="position:absolute; top:73%; left:71%; width:12px; height:12px; border:1.5px solid rgba(225,45,55,0.7); box-shadow:0 0 9px rgba(225,45,55,0.45); animation:lg-pulse 3.2s ease-in-out infinite;"></div>
+  <div style="position:absolute; top:30%; left:24%; width:10px; height:10px; border:1.5px solid rgba(225,45,55,0.6); box-shadow:0 0 7px rgba(225,45,55,0.4); animation:lg-pulse 5s ease-in-out infinite;"></div>
+
+  <!-- scattered code numbers -->
+  <div style="position:absolute; top:6%; left:52%; font-family:var(--font-mono); font-size:12px; color:rgba(150,170,215,0.22); letter-spacing:1px;">11423354545264531346</div>
+  <div style="position:absolute; bottom:13%; left:54%; font-family:var(--font-mono); font-size:12px; color:rgba(150,170,215,0.2); letter-spacing:1px;">2511325468024163461346</div>
+  <div style="position:absolute; bottom:6%; left:30%; font-family:var(--font-mono); font-size:12px; color:rgba(150,170,215,0.16); letter-spacing:1px;">121345234354765761345</div>
+  <div style="position:absolute; top:46%; left:2%; font-family:var(--font-mono); font-size:12px; color:rgba(150,170,215,0.16); letter-spacing:1px;">3461346</div>
+
+  <!-- vignette -->
+  <div style="position:absolute; inset:0; background:radial-gradient(ellipse 80% 75% at 50% 40%, transparent 32%, rgba(3,6,16,0.8) 100%); pointer-events:none;"></div>
+
+  <!-- Login card -->
+  <div style="position:relative; z-index:2; width:min(92vw,480px); background:rgba(18,28,52,0.55); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.13); border-radius:6px; box-shadow:0 30px 70px -20px rgba(0,0,0,0.7); padding:38px 40px 34px;">
+
+    <!-- brand -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:22px;">
+      <div style="width:44px; height:44px; border-radius:11px; background:radial-gradient(circle at 35% 30%, var(--brand-400), var(--brand-700)); display:grid; place-items:center; flex-shrink:0; box-shadow:0 4px 12px rgba(31,95,199,.4);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path></svg>
+      </div>
+      <div style="line-height:1;">
+        <div style="font-family:var(--font-display); font-weight:700; font-size:26px; letter-spacing:.02em; color:#fff;">CYBER <span style="font-weight:300; color:#dbe4f4;">Hub</span></div>
+        <div style="font-size:9.5px; letter-spacing:.26em; text-transform:uppercase; color:#8ea0c4; margin-top:4px; text-align:center;">powered by Skytek</div>
+      </div>
+    </div>
+
+    <h1 style="margin:0 0 8px; text-align:center; font-family:var(--font-display); font-size:28px; font-weight:700; letter-spacing:.06em; color:#fff;">LOGIN</h1>
+    <p style="margin:0 0 26px; text-align:center; font-size:14px; color:#aeb9cf;">Not a member? <a href="#" class="lg-link">Register now</a></p>
+
+    <form action="Dashboard.html" method="get" style="display:flex; flex-direction:column; gap:18px;">
+      <div>
+        <label for="lg-user" style="display:block; font-size:13px; font-weight:700; color:#eef2f9; margin-bottom:7px;">Username</label>
+        <input id="lg-user" name="user" type="text" class="lg-input" placeholder="Enter your username" autocomplete="username">
+      </div>
+      <div>
+        <label for="lg-pass" style="display:block; font-size:13px; font-weight:700; color:#eef2f9; margin-bottom:7px;">Password</label>
+        <input id="lg-pass" name="pass" type="password" class="lg-input" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="ds-btn ds-btn--primary" style="width:100%; height:48px; font-size:15px; font-weight:700; letter-spacing:.04em; margin-top:4px;">LOGIN</button>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:2px;">
+        <label style="display:flex; align-items:center; gap:9px; font-size:13px; color:#dbe4f4; cursor:pointer;">
+          <input type="checkbox" class="ds-check"> Remember Me
+        </label>
+        <a href="#" class="lg-link" style="font-weight:600;">Forgot Password?</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- skytek corner logo -->
+  <div style="position:absolute; left:26px; bottom:22px; z-index:2; display:flex; align-items:center; gap:9px;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><circle cx="6" cy="6" r="2.4"></circle><circle cx="13" cy="6" r="2.4"></circle><circle cx="6" cy="13" r="2.4"></circle><circle cx="13.5" cy="13.5" r="3.4"></circle><circle cx="5.5" cy="19.5" r="1.8"></circle></svg>
+    <div style="line-height:1;">
+      <div style="font-weight:800; font-size:16px; color:#fff; letter-spacing:.01em;">skytek</div>
+      <div style="font-size:7.5px; letter-spacing:.22em; text-transform:uppercase; color:#9fb0cf; margin-top:3px;">Space to Innovate</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
