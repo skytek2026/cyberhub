@@ -8,8 +8,8 @@
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="ds-skytek/styles.css">
-<script src="ds-skytek/ds_bundle.js"></script>
+<link rel="stylesheet" href="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/styles.css">
+<script src="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/_ds_bundle.js"></script>
 <script src="https://unpkg.com/framer-motion@11.11.17/dist/framer-motion.js" crossorigin="anonymous"></script>
 <style>
   html, body { margin:0; padding:0; }
@@ -110,7 +110,7 @@
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--brand-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path></svg>
                   </button>
                 </sc-if>
-                <a href="#" class="ch-link" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:{{ p.weight }};">{{ p.name }}</a>
+                <a href="{{ p.href }}" class="ch-link" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:{{ p.weight }};">{{ p.name }}</a>
               </div>
               <span style="color:var(--text-secondary);">{{ p.risk }}</span>
               <span style="text-align:right; color:var(--text-primary); font-variant-numeric:tabular-nums;">{{ p.exposure }}</span>
@@ -430,12 +430,13 @@ class Component extends DCLogic {
     ];
     const isPortfolios = this.state.portTab === "portfolios";
     const expanded = this.state.expandedGroups || {};
-    const portfolioRowsBase = portfolios.map(p => ({ name: p.name, risk: p.risk, exposure: p.exposure, isGroup: false, indent: "0px", weight: 400, rot: "0deg", toggle: null }));
+    const portHref = (name) => "PortfolioOverview.html?p=" + encodeURIComponent(name);
+    const portfolioRowsBase = portfolios.map(p => ({ name: p.name, href: portHref(p.name), risk: p.risk, exposure: p.exposure, isGroup: false, indent: "0px", weight: 400, rot: "0deg", toggle: null }));
     const groupRows = [];
     groups.forEach((g, gi) => {
       const open = !!expanded[gi];
-      groupRows.push({ name: g.name, risk: g.risk, exposure: g.exposure, isGroup: true, indent: "0px", weight: 600, rot: open ? "90deg" : "0deg", toggle: () => this.toggleGroup(gi) });
-      if (open) g.children.forEach(c => groupRows.push({ name: c.name, risk: c.risk, exposure: c.exposure, isGroup: false, indent: "24px", weight: 400, rot: "0deg", toggle: null }));
+      groupRows.push({ name: g.name, href: portHref(g.name), risk: g.risk, exposure: g.exposure, isGroup: true, indent: "0px", weight: 600, rot: open ? "90deg" : "0deg", toggle: () => this.toggleGroup(gi) });
+      if (open) g.children.forEach(c => groupRows.push({ name: c.name, href: portHref(c.name), risk: c.risk, exposure: c.exposure, isGroup: false, indent: "24px", weight: 400, rot: "0deg", toggle: null }));
     });
 
     // ---- Exposure categories ----
