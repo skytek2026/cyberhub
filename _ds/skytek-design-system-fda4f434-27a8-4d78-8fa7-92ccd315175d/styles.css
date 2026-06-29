@@ -1421,6 +1421,60 @@ section[id] { scroll-margin-top: 16px; }
 }
 
 /* ============================================================
+   Scrollbars — themed 6 px thin scrollbar, cross-browser
+   Thumb = brand (theme) color, track = light grey.
+   Applied to the page root + any scroll container marked
+   .ds-scroll (or [data-scroll]). WebKit/Blink honour the exact
+   6 px width via ::-webkit-scrollbar; Firefox approximates it
+   with scrollbar-width:thin and matches the colors exactly.
+   ============================================================ */
+:root {
+  --scrollbar-size:        6px;
+  --scrollbar-track:       var(--slate-100);   /* light grey */
+  --scrollbar-thumb:       var(--brand-500);   /* theme color */
+  --scrollbar-thumb-hover: var(--brand-600);   /* darker on hover */
+}
+
+/* Firefox */
+html,
+.ds-scroll,
+[data-scroll] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* WebKit / Blink (Chrome, Safari, Edge, Opera) */
+html::-webkit-scrollbar,
+.ds-scroll::-webkit-scrollbar,
+[data-scroll]::-webkit-scrollbar {
+  width:  var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+html::-webkit-scrollbar-track,
+.ds-scroll::-webkit-scrollbar-track,
+[data-scroll]::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 9999px;
+}
+html::-webkit-scrollbar-thumb,
+.ds-scroll::-webkit-scrollbar-thumb,
+[data-scroll]::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+html::-webkit-scrollbar-thumb:hover,
+.ds-scroll::-webkit-scrollbar-thumb:hover,
+[data-scroll]::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+/* Corner where vertical & horizontal bars meet */
+html::-webkit-scrollbar-corner,
+.ds-scroll::-webkit-scrollbar-corner,
+[data-scroll]::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+/* ============================================================
    Domain primitives — chart palette, map glyphs, formatting
    ============================================================ */
 
