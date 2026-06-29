@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/styles.css">
+<script src="_ds/skytek-design-system-fda4f434-27a8-4d78-8fa7-92ccd315175d/_ds_bundle.js"></script>
+<style>
+  html, body { margin:0; padding:0; }
+  body { background: var(--bg-canvas); }
+  [data-theme="dark"] {
+    --bg-app:#0B1220; --bg-canvas:#0B1220; --bg-surface:#121A2B; --bg-sunken:#0f1626; --bg-muted:#1B2438;
+    --text-primary:#EEF2F8; --text-secondary:#9FB0C7; --text-muted:#73839C;
+    --border-subtle:#1E2A40; --border-default:#26344E; --border-strong:#374864;
+    --slate-50:#162033; --slate-100:#1B2640; --slate-150:#1f2a46; --slate-200:#26344E; --slate-300:#37486a;
+    --white:#121A2B;
+  }
+  .ch-link { color: var(--text-link); text-decoration: none; font-weight: 600; }
+  .ch-link:hover { text-decoration: underline; color: var(--brand-600); }
+  .ch-brand-logo { display:block; }
+  [data-theme="dark"] .ch-brand-logo { filter: invert(1); }
+  .ch-drawer { transform: translateX(-100%); transition: transform .28s cubic-bezier(0.16,1,0.3,1); }
+  .ch-drawer.is-open { transform: translateX(0); }
+  .ch-scrim { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+  .ch-scrim.is-open { opacity: 1; pointer-events: auto; }
+  .ch-menu { display:none; }
+  .ch-menu.is-open { display:block; }
+  .ch-menu-item { display:flex; align-items:center; gap:10px; padding:10px 14px; font-size:13px; color:var(--text-primary); text-decoration:none; cursor:pointer; background:transparent; border:0; width:100%; font-family:var(--font-sans); }
+  .ch-menu-item:hover { background:var(--slate-50); }
+  .ch-menu-item svg { color:var(--text-muted); flex-shrink:0; }
+  .ch-menu-item.danger { color:var(--danger-700); }
+  .ch-menu-item.danger svg { color:var(--danger-500); }
+  .ch-menu-item.danger:hover { background:var(--danger-050); }
+  .exp-row { display:flex; align-items:center; gap:10px; padding:11px 12px; cursor:pointer; font-size:13px; color:var(--text-primary); border-bottom:1px solid var(--border-subtle); }
+  .exp-row:hover { background:var(--slate-50); }
+  .exp-row.is-active { background:var(--brand-050); }
+  .tech-row:hover { background:var(--slate-50); }
+  .pf-corow:hover { background:var(--slate-50); }
+</style>
+</helmet>
+<div data-theme="{{ themeAttr }}" data-screen-label="Portfolio Overview" style="min-height:100vh; background:var(--bg-canvas); font-family:var(--font-sans); color:var(--text-primary); position:relative;">
+
+  <!-- ===== Top bar ===== -->
+  <header style="position:sticky; top:0; z-index:30; height:60px; display:flex; align-items:center; gap:16px; padding:0 20px; background:var(--bg-surface); border-bottom:1px solid var(--border-default);">
+    <button onClick="{{ toggleDrawer }}" aria-label="Open navigation" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+    </button>
+    <h1 style="margin:0; font-family:var(--font-display); font-size:21px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">Portfolio Overview</h1>
+    <div style="flex:1;"></div>
+    <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg>
+    </button>
+    <div style="position:relative;">
+      <button onClick="{{ toggleMenu }}" aria-label="Account menu" style="width:34px; height:34px; border:0; padding:0; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+      </button>
+      <div onClick="{{ closeMenu }}" class="ch-menu {{ menuCls }}" style="position:fixed; inset:0; z-index:55;"></div>
+      <div class="ch-menu {{ menuCls }}" style="position:absolute; top:46px; right:0; z-index:56; width:228px; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-lg); box-shadow:var(--card-shadow-raised); overflow:hidden;">
+        <div style="padding:12px 14px; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; flex-shrink:0;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Alex Morgan</div>
+            <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">alex.morgan@skytek.com</div>
+          </div>
+        </div>
+        <a href="#" class="ch-menu-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>My Profile
+        </a>
+        <a href="index.html" class="ch-menu-item danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main style="padding:18px 28px 8px;">
+
+    <!-- Breadcrumb + portfolio title -->
+    <div style="margin-bottom:22px;">
+      <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-secondary);">
+        <a href="SystemicRisk.html" class="ch-link" style="display:inline-flex; align-items:center; gap:6px; color:var(--text-secondary);" style-hover="color:var(--brand-600);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Systemic Risk
+        </a>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+        <span style="font-weight:600; color:var(--text-primary);">{{ portfolioName }}</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px; margin-top:14px; flex-wrap:wrap;">
+        <h2 style="margin:0; font-family:var(--font-display); font-size:25px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">{{ portfolioName }}</h2>
+        <span class="ds-badge {{ riskBadgeCls }} ds-badge--dot">{{ riskLabel }}</span>
+        <span style="font-size:13px; color:var(--text-muted);">{{ companyCountLabel }}</span>
+      </div>
+    </div>
+
+    <!-- Top 4 cards -->
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px; align-items:stretch;">
+
+      <!-- Exposure Aggregation -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <h3 style="margin:-16px -18px 0; padding:13px 18px; border-bottom:1px solid var(--border-subtle); font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Exposure Aggregation</h3>
+        <div style="text-align:center; margin:22px 0 26px;">
+          <div style="font-size:14px; color:var(--text-secondary);">Our Exposure:</div>
+          <div style="font-family:var(--font-display); font-size:34px; font-weight:700; color:var(--success-500); margin-top:4px; letter-spacing:-0.01em;">{{ portfolioExposure }}</div>
+        </div>
+        <div data-scroll style="display:flex; flex-direction:column; gap:0; overflow-y:auto; max-height:150px;">
+          <sc-for list="{{ exposureCats }}" as="ec" hint-placeholder-count="3">
+            <div class="{{ ec.cls }}" onClick="{{ ec.go }}" style="padding-left:{{ ec.indent }}; gap:0px;">
+              <sc-if value="{{ ec.isCat }}" hint-placeholder-val="{{ true }}">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate({{ ec.rot }}); transition:transform .15s; flex-shrink:0;"><path d="m9 18 6-6-6-6"></path></svg>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--brand-500)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"></path></svg>
+              </sc-if>
+              <span style="flex:1; min-width:0; font-weight:{{ ec.weight }};">{{ ec.name }}</span>
+              <sc-if value="{{ ec.exposure }}" hint-placeholder-val="">
+                <span style="color:var(--text-secondary); font-variant-numeric:tabular-nums;">{{ ec.exposure }}</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- Exposure By Technology -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <h3 style="margin:-16px -18px 0; padding:13px 18px; border-bottom:1px solid var(--border-subtle); font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Exposure By Technology</h3>
+        <div style="display:flex; justify-content:space-between; padding:10px 8px 8px; font-size:12px; font-weight:600; color:var(--text-primary); border-bottom:1px solid var(--border-subtle);"><span>Name</span><span>Our Exposure</span></div>
+        <div data-scroll style="overflow-y:auto; max-height:236px;">
+          <sc-for list="{{ techRows }}" as="t" hint-placeholder-count="8">
+            <div class="tech-row" onClick="{{ t.toggle }}" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 8px; padding-left:{{ t.indent }}; font-size:13px; border-bottom:1px solid var(--border-subtle); cursor:{{ t.cursor }};">
+              <span style="display:inline-flex; align-items:center; gap:7px; min-width:0; color:var(--text-primary);">
+                <sc-if value="{{ t.isTech }}" hint-placeholder-val="{{ true }}">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate({{ t.rot }}); transition:transform .15s; flex-shrink:0;"><path d="m9 18 6-6-6-6"></path></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-500)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"></path></svg>
+                </sc-if>
+                <sc-if value="{{ t.isTech }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-weight:{{ t.weight }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.name }}</span>
+                </sc-if>
+                <sc-if value="{{ t.isCompany }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ t.href }}" class="ch-link" style="font-weight:{{ t.weight }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.name }}</a>
+                </sc-if>
+              </span>
+              <span style="color:var(--text-secondary); font-variant-numeric:tabular-nums; flex-shrink:0;">{{ t.exposure }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- Alerts -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <h3 style="margin:-16px -18px 0; padding:13px 18px; border-bottom:1px solid var(--border-subtle); font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Alerts</h3>
+        <div style="display:grid; grid-template-columns:1.5fr 1fr 0.7fr auto; gap:8px; padding:10px 4px 8px; font-size:12px; font-weight:600; color:var(--text-primary); border-bottom:1px solid var(--border-subtle);"><span>Name</span><span>Date</span><span>Policies</span><span style="text-align:right;">Severity</span></div>
+        <div data-scroll style="overflow-y:auto; max-height:170px;">
+          <sc-for list="{{ alertRows }}" as="a" hint-placeholder-count="4">
+            <div style="display:grid; grid-template-columns:1.5fr 1fr 0.7fr auto; gap:8px; padding:10px 4px; font-size:12.5px; align-items:center; border-bottom:1px solid var(--border-subtle);">
+              <a href="#" class="ch-link" style="font-size:12.5px; white-space:nowrap;">{{ a.cve }}</a>
+              <span style="color:var(--text-secondary);">{{ a.date }}</span>
+              <span style="color:var(--text-secondary);">{{ a.policies }}</span>
+              <span style="text-align:right;"><span class="ds-badge {{ a.sevClass }}">{{ a.severity }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+        <div class="ds-card-foot" style="margin:auto -18px -16px; border-radius:0 0 var(--radius-xl) var(--radius-xl); justify-content:center;">
+          <a href="#" class="ds-btn ds-btn--ghost ds-btn--sm">All Alerts<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg></a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Companies + Risk Level -->
+    <div style="display:grid; grid-template-columns:calc((100% - 40px)/3) 1fr; gap:20px; margin-top:20px; align-items:stretch;">
+
+      <!-- Companies in portfolio -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <h3 style="margin:-16px -18px 0; padding:13px 18px; border-bottom:1px solid var(--border-subtle); font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Companies in Portfolio</h3>
+        <div style="display:grid; grid-template-columns:1fr 58px 64px; gap:8px; padding:11px 8px 9px; font-size:12px; font-weight:600; color:var(--text-primary); border-bottom:1px solid var(--border-subtle);"><span>Name</span><span>Risk</span><span style="text-align:right;">Exposure</span></div>
+        <div data-scroll style="overflow-y:auto; flex:1; min-height:0;">
+          <sc-for list="{{ companyRows }}" as="c" hint-placeholder-count="7">
+            <div class="pf-corow" style="display:grid; grid-template-columns:1fr 58px 64px; gap:8px; align-items:center; padding:10px 8px; font-size:13px; border-bottom:1px solid var(--border-subtle);">
+              <a href="{{ c.href }}" class="ch-link" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ c.name }}</a>
+              <span><span class="ds-badge {{ c.badgeCls }}">{{ c.badgeLabel }}</span></span>
+              <span style="text-align:right; color:var(--text-primary); font-variant-numeric:tabular-nums;">{{ c.exposure }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div class="ds-card-foot" style="margin:14px -18px -16px 0; border-radius:0 0 var(--radius-xl) var(--radius-xl); justify-content:center;">
+          <a href="Companies.html" class="ds-btn ds-btn--ghost ds-btn--sm">All Companies<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg></a>
+        </div>
+      </section>
+
+      <!-- Risk Level -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column;">
+      <div style="padding:14px 24px; border-bottom:1px solid var(--border-subtle);">
+        <h3 style="margin:0; font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary);">Risk Level</h3>
+      </div>
+      <div style="padding:24px;">
+        <div style="display:grid; grid-template-columns:260px 1fr; gap:36px; align-items:center;">
+          <div style="display:grid; place-items:center;">
+            <div style="position:relative; width:220px; height:220px;">
+              <svg width="220" height="220" viewBox="0 0 220 220" style="transform:rotate(-90deg);">
+                <circle cx="110" cy="110" r="85" fill="none" stroke="var(--slate-200)" stroke-width="22"></circle>
+                <circle cx="110" cy="110" r="85" fill="none" stroke="{{ riskColor }}" stroke-width="22" stroke-linecap="round" stroke-dasharray="{{ donutDash }}"></circle>
+              </svg>
+              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">
+                <span style="width:14px; height:14px; border-radius:50%; background:{{ riskColor }};"></span>
+                <div style="font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary);">{{ riskLabel }}</div>
+                <div style="font-size:12px; color:var(--text-muted);">Risk score: {{ scoreDisplay }}</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 style="margin:0 0 8px; font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Risk level rules</h4>
+            <p style="margin:0 0 20px; font-size:13px; line-height:1.5; color:var(--text-secondary);">The below shows the risk score thresholds applied when calculating the portfolio risk level.</p>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:10px; border-bottom:1px solid var(--border-subtle); font-size:13px; font-weight:600; color:var(--text-primary);">
+              <span>Risk levels</span><span>Risk score</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border-subtle); font-size:13px;">
+              <span style="display:inline-flex; align-items:center; gap:10px; color:var(--text-secondary);"><span style="width:9px; height:9px; border-radius:50%; background:var(--success-500);"></span>Low risk</span>
+              <span style="color:var(--text-primary);">0 to 60</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border-subtle); font-size:13px;">
+              <span style="display:inline-flex; align-items:center; gap:10px; color:var(--text-secondary);"><span style="width:9px; height:9px; border-radius:50%; background:var(--warning-500);"></span>Medium risk</span>
+              <span style="color:var(--text-primary);">60 to 120</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; font-size:13px;">
+              <span style="display:inline-flex; align-items:center; gap:10px; color:var(--text-secondary);"><span style="width:9px; height:9px; border-radius:50%; background:var(--danger-500);"></span>High risk</span>
+              <span style="color:var(--text-primary);">&gt; 120</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <!-- Rating Factors bar chart -->
+    <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); margin-top:20px; display:flex; flex-direction:column;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 24px; border-bottom:1px solid var(--border-subtle);">
+        <h3 style="margin:0; font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary);">Rating Factor Weights</h3>
+        <span style="font-size:12.5px; color:var(--text-muted);">Total 100%</span>
+      </div>
+      <div style="padding:22px 24px 26px; display:flex; flex-direction:column; gap:20px;">
+        <sc-for list="{{ ratingFactors }}" as="f" hint-placeholder-count="6">
+          <div style="display:grid; grid-template-columns:300px 1fr; gap:24px; align-items:center;">
+            <div>
+              <div style="font-size:14px; font-weight:600; color:var(--text-primary);">{{ f.name }}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:4px; line-height:1.45; text-wrap:pretty;">{{ f.desc }}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div style="flex:1; height:16px; background:var(--slate-100); border-radius:var(--radius-pill); overflow:hidden;">
+                <div style="height:100%; width:{{ f.barW }}; background:var(--brand-600); border-radius:var(--radius-pill);"></div>
+              </div>
+              <div style="width:48px; text-align:right; font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); font-variant-numeric:tabular-nums;">{{ f.weight }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer style="padding:24px 28px 32px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--text-muted);">
+    <a href="#" class="ch-link">About Skytek</a>
+    <div>© 2025 Skytek Limited&nbsp;&nbsp;|&nbsp;&nbsp;Powered by <a href="#" class="ch-link">skytek</a></div>
+  </footer>
+
+  <!-- ===== Sidebar drawer + scrim ===== -->
+  <div onClick="{{ closeDrawer }}" class="ch-scrim {{ drawerCls }}" style="position:fixed; inset:0; z-index:40; background:rgba(15,23,42,.45);"></div>
+  <aside class="ch-drawer {{ drawerCls }}" data-scroll style="position:fixed; top:0; left:0; bottom:0; z-index:50; width:300px; background:var(--bg-surface); border-right:1px solid var(--border-default); box-shadow:var(--card-shadow-raised); display:flex; flex-direction:column; overflow-y:auto;">
+    <div style="display:flex; align-items:center; gap:10px; padding:20px 18px 16px;">
+      <img src="images/skytek-cyber-hub-logo-black-landscape.png" alt="Cyber Hub — powered by Skytek" class="ch-brand-logo" style="height:34px; width:auto; max-width:205px; object-fit:contain; margin-right:auto;">
+      <button onClick="{{ closeDrawer }}" aria-label="Close navigation" style="width:30px; height:30px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-muted); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <nav style="padding:8px 14px; display:flex; flex-direction:column; gap:4px;">
+      <a href="Dashboard.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg>Dashboard
+      </a>
+      <a href="Reports.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8"></path></svg>Reports
+      </a>
+      <a href="SystemicRisk.html" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); background:var(--brand-600); color:#fff; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 2px 6px rgba(45,127,251,.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Systemic Risk
+      </a>
+      <a href="Companies.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"></path></svg>Companies
+      </a>
+    </nav>
+
+    <div style="padding:18px 18px 6px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">My Report Activity</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; background:var(--slate-50); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:{{ stat.bg }}; color:{{ stat.fg }};">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ stat.icon }}"></path></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:11.5px; color:var(--text-muted);">{{ stat.label }}</div>
+              <div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">{{ stat.value }}</div>
+              <div style="font-size:10.5px; color:var(--text-muted);">{{ stat.sub }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="padding:18px 18px 24px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">Subscription Details</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--info-100); color:var(--info-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription Start</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2024</div></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--danger-100); color:var(--danger-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription End</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2025</div></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</x-dc>
+<template id="__bundler_thumbnail" data-bg-color="#2d7ffb">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#2d7ffb"/>
+    <g fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="360" y="300" width="180" height="200" rx="16"/>
+      <rect x="560" y="240" width="180" height="320" rx="16"/>
+      <rect x="760" y="360" width="180" height="140" rx="16"/>
+    </g>
+  </svg>
+</template>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { drawerOpen: false, menuOpen: false, dark: false, expCat: "Industry Type", expExpanded: {}, techExpanded: {} };
+
+  toggleExp(n) { this.setState(s => ({ expExpanded: { ...s.expExpanded, [n]: !(s.expExpanded || {})[n] } })); }
+  toggleTech(n) { this.setState(s => ({ techExpanded: { ...s.techExpanded, [n]: !(s.techExpanded || {})[n] } })); }
+
+  renderVals() {
+    const params = new URLSearchParams(location.search);
+    const portfolioName = params.get("p") || "SME companies";
+
+    // ---- Portfolio risk level ----
+    const riskMap = {
+      "SME companies": 132, "Critical Infrastructure": 88, "Cloud vendors": 128,
+      "Healthcare organisations": 44, "Industrial Manufacturing": 76, "Financial services": 124,
+      "Tech Holdings Group": 130, "Diversified Group": 84, "Income & Growth Group": 52, "Global Macro Group": 126,
+    };
+    const expoMap = {
+      "SME companies": "$19.3M", "Critical Infrastructure": "$15.2M", "Cloud vendors": "$13.6M",
+      "Healthcare organisations": "$12.0M", "Industrial Manufacturing": "$9.8M", "Financial services": "$7.4M",
+      "Tech Holdings Group": "$48.1M", "Diversified Group": "$33.5M", "Income & Growth Group": "$21.9M", "Global Macro Group": "$18.7M",
+    };
+    const score = riskMap[portfolioName] != null ? riskMap[portfolioName] : 78;
+    const portfolioExposure = expoMap[portfolioName] || "$14.2M";
+    const band = score >= 120 ? "high" : score >= 60 ? "medium" : "low";
+    const riskColor = band === "high" ? "var(--danger-500)" : band === "medium" ? "var(--warning-500)" : "var(--success-500)";
+    const riskLabel = band === "high" ? "High risk" : band === "medium" ? "Medium risk" : "Low risk";
+    const riskBadgeCls = band === "high" ? "ds-badge--danger" : band === "medium" ? "ds-badge--warning" : "ds-badge--success";
+    const C = 2 * Math.PI * 85;
+    const donutDash = (Math.min(score / 120, 1) * C).toFixed(1) + " " + C.toFixed(1);
+
+    // ---- Companies in portfolio ----
+    const coDefs = [
+      { name: "Cobalt Systems", website: "www.cobaltsystems.io", industry: "Software & IT services", countries: "Ireland", risk: 128, exposure: "$4.8M", desc: "An enterprise software vendor building workflow, identity and data-integration tools for mid-market and enterprise customers." },
+      { name: "Nimbus Cloud Co", website: "www.nimbuscloud.io", industry: "Software & IT services", countries: "United States", risk: 134, exposure: "$3.9M", desc: "A cloud infrastructure provider offering compute, storage and platform services to startups and enterprise customers." },
+      { name: "Northwind Trading", website: "www.northwindtrading.com", industry: "Wholesale & distribution", countries: "United Kingdom", risk: 71, exposure: "$2.7M", desc: "A wholesale trading group supplying retail and hospitality clients across Europe with consumer goods and logistics." },
+      { name: "Vertex Health", website: "www.vertexhealth.com", industry: "Healthcare", countries: "United States", risk: 96, exposure: "$2.3M", desc: "A healthcare network running hospitals, clinics and a patient-records platform serving several million members." },
+      { name: "Granite Insurance", website: "www.graniteinsurance.com", industry: "Insurance", countries: "United States", risk: 58, exposure: "$1.9M", desc: "A property and casualty insurer underwriting commercial and personal lines with a growing digital claims platform." },
+      { name: "Orion Retail", website: "www.orionretail.com", industry: "Retail & e-commerce", countries: "France", risk: 67, exposure: "$1.6M", desc: "An omnichannel retailer running physical stores and an e-commerce platform across apparel and homeware." },
+      { name: "Meridian Bank", website: "www.meridianbank.com", industry: "Banking & financial services", countries: "United States", risk: 43, exposure: "$1.4M", desc: "A retail and commercial bank offering deposits, lending and digital banking to consumers and small businesses." },
+    ];
+    const coBadge = (sc) => sc >= 120 ? { badgeCls: "ds-badge--danger", badgeLabel: "High" } : sc >= 60 ? { badgeCls: "ds-badge--warning", badgeLabel: "Med" } : { badgeCls: "ds-badge--success", badgeLabel: "Low" };
+    const coHref = (c) => "CompanyReport.html?" + new URLSearchParams({ c: c.name, w: c.website, ind: c.industry, co: c.countries, s: String(c.risk), d: c.desc }).toString();
+    const companyRows = coDefs.map(c => ({ name: c.name, href: coHref(c), exposure: c.exposure, ...coBadge(c.risk) }));
+    const companyCountLabel = coDefs.length + " companies";
+
+    // ---- Exposure categories ----
+    const expData = {
+      "Industry Type": [
+        { name: "Cloud vendors", exposure: "$5.2M" },
+        { name: "SME companies", exposure: "$4.1M" },
+        { name: "Healthcare", exposure: "$2.6M" },
+        { name: "Financial services", exposure: "$2.4M" },
+      ],
+      "Size": [
+        { name: "Large enterprise", exposure: "$8.1M" },
+        { name: "Mid-market", exposure: "$4.4M" },
+        { name: "Small business", exposure: "$1.7M" },
+      ],
+      "Location": [
+        { name: "North America", exposure: "$7.0M" },
+        { name: "Europe", exposure: "$5.2M" },
+        { name: "Asia Pacific", exposure: "$2.0M" },
+      ],
+    };
+    const expExpanded = this.state.expExpanded || {};
+    const exposureCats = [];
+    ["Industry Type", "Size", "Location"].forEach(n => {
+      const open = !!expExpanded[n];
+      exposureCats.push({ name: n, isCat: true, exposure: "", indent: "12px", weight: 500, rot: open ? "90deg" : "0deg", cls: open ? "exp-row is-active" : "exp-row", go: () => this.toggleExp(n) });
+      if (open) expData[n].forEach(s => exposureCats.push({ name: s.name, isCat: false, exposure: s.exposure, indent: "46px", weight: 400, rot: "0deg", cls: "exp-row", go: null }));
+    });
+
+    // ---- Exposure By Technology ----
+    const techDefs = [
+      { name: "AWS", count: 6, exposure: "$5.1M" },
+      { name: "Azure", count: 5, exposure: "$4.2M" },
+      { name: "GCP", count: 4, exposure: "$2.9M" },
+      { name: "WordPress", count: 3, exposure: "$1.8M" },
+      { name: "Apache", count: 3, exposure: "$1.4M" },
+      { name: "NGINX", count: 2, exposure: "$1.1M" },
+    ];
+    const coPool = ["Cobalt Systems", "Nimbus Cloud Co", "Northwind Trading", "Vertex Health", "Granite Insurance", "Orion Retail", "Meridian Bank"];
+    const coLookup = {};
+    coDefs.forEach(c => { coLookup[c.name] = c; });
+    const splitExposure = (totalStr, n) => {
+      const total = parseFloat(totalStr.replace(/[^0-9.]/g, ""));
+      let sum = 0; const weights = [];
+      for (let i = 0; i < n; i++) { const w = n - i; weights.push(w); sum += w; }
+      return weights.map(w => "$" + (total * w / sum).toFixed(1) + "M");
+    };
+    const techExpanded = this.state.techExpanded || {};
+    let coIdx = 0;
+    const techRows = [];
+    techDefs.forEach(t => {
+      const open = !!techExpanded[t.name];
+      techRows.push({ name: t.name + " (" + t.count + ")", exposure: t.exposure, isTech: true, indent: "8px", weight: 500, rot: open ? "90deg" : "0deg", cursor: "pointer", toggle: () => this.toggleTech(t.name) });
+      if (open) {
+        const vals = splitExposure(t.exposure, t.count);
+        for (let i = 0; i < t.count; i++) {
+          const coName = coPool[coIdx % coPool.length];
+          const c = coLookup[coName] || { name: coName };
+          techRows.push({ name: coName, href: coHref(c), exposure: vals[i], isTech: false, isCompany: true, indent: "38px", weight: 400, rot: "0deg", cursor: "default", toggle: null });
+          coIdx += 1;
+        }
+      }
+    });
+
+    // ---- Alerts ----
+    const sevClass = (s) => s === "High" ? "ds-badge--danger" : s === "Medium" ? "ds-badge--neutral" : "ds-badge--success";
+    const alertRows = [
+      { cve: "CVE-2024-4845", date: "2024-06-12", policies: "4", severity: "High" },
+      { cve: "CVE-2024-5543", date: "2024-06-12", policies: "3", severity: "High" },
+      { cve: "CVE-2024-6789", date: "2024-06-15", policies: "5", severity: "Medium" },
+      { cve: "CVE-2024-8021", date: "2024-06-18", policies: "2", severity: "High" },
+      { cve: "CVE-2024-9134", date: "2024-06-20", policies: "1", severity: "Low" },
+    ].map(a => ({ ...a, sevClass: sevClass(a.severity) }));
+
+    // ---- Rating factor weights ----
+    const ratingFactors = [
+      { name: "Historical Performance", weight: "25%", pct: 25, desc: "Loss ratio, catastrophe losses, reserve development" },
+      { name: "Underwriting Discipline", weight: "25%", pct: 25, desc: "Pricing adequacy, limit / attachment profile, limit management" },
+      { name: "Portfolio Quality", weight: "20%", pct: 20, desc: "Industry mix, security controls" },
+      { name: "Accumulation Mgmt.", weight: "15%", pct: 15, desc: "Cloud concentration, vendor dependencies, aggregation controls" },
+      { name: "Data & Reporting Quality", weight: "10%", pct: 10, desc: "Bordereaux quality, data completeness, timeliness" },
+      { name: "Governance & Claims", weight: "5%", pct: 5, desc: "Cyber expertise, claims handling, incident response" },
+    ].map(f => ({ ...f, barW: f.pct + "%" }));
+
+    const stats = [
+      { label: "Reports Generated", value: "8", sub: "", icon: "M3 3v18h18M18 17V9M13 17V5M8 17v-3", bg: "var(--brand-100)", fg: "var(--brand-600)" },
+      { label: "Avg. Scan Time", value: "2h 45m", sub: "", icon: "M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z", bg: "var(--success-100)", fg: "var(--success-700)" },
+      { label: "Total Monthly Allowance", value: "50 Hours", sub: "", icon: "M10 2h4M12 14l2.5-2.5M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z", bg: "var(--info-100)", fg: "var(--info-700)" },
+      { label: "Time Remaining", value: "28h 15m", sub: "Renews Dec 1, 2024", icon: "M5 22h14M5 2h14M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4A2 2 0 0 0 7 17.8V22", bg: "var(--warning-100)", fg: "var(--warning-700)" },
+    ];
+
+    const open = this.state.drawerOpen;
+    return {
+      portfolioName, portfolioExposure, companyCountLabel,
+      riskColor, riskLabel, riskBadgeCls, donutDash, scoreDisplay: String(score),
+      companyRows, exposureCats, techRows, alertRows, ratingFactors, stats,
+      themeAttr: this.state.dark ? "dark" : "",
+      themeIcon: this.state.dark
+        ? "M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+        : "M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z",
+      drawerCls: open ? "is-open" : "",
+      menuCls: this.state.menuOpen ? "is-open" : "",
+      toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      closeDrawer: () => this.setState({ drawerOpen: false }),
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      toggleTheme: () => this.setState(s => ({ dark: !s.dark })),
+    };
+  }
+}
+</script>
+</body>
+</html>
