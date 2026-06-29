@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="ds-skytek/styles.css">
+<script src="ds-skytek/ds_bundle.js"></script>
+<style>
+  html, body { margin:0; padding:0; }
+  body { background: var(--bg-canvas); }
+  [data-theme="dark"] {
+    --bg-app:#0B1220; --bg-canvas:#0B1220; --bg-surface:#121A2B; --bg-sunken:#0f1626; --bg-muted:#1B2438;
+    --text-primary:#EEF2F8; --text-secondary:#9FB0C7; --text-muted:#73839C;
+    --border-subtle:#1E2A40; --border-default:#26344E; --border-strong:#374864;
+    --slate-50:#162033; --slate-100:#1B2640; --slate-150:#1f2a46; --slate-200:#26344E; --slate-300:#37486a;
+    --white:#121A2B;
+  }
+  .ch-link { color: var(--text-link); text-decoration: none; font-weight: 600; }
+  .ch-link:hover { text-decoration: underline; color: var(--brand-600); }
+  .ch-brand-logo { display:block; }
+  [data-theme="dark"] .ch-brand-logo { filter: invert(1); }
+  .ch-drawer { transform: translateX(-100%); transition: transform .28s cubic-bezier(0.16,1,0.3,1); }
+  .ch-drawer.is-open { transform: translateX(0); }
+  .ch-scrim { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+  .ch-scrim.is-open { opacity: 1; pointer-events: auto; }
+  .ch-menu { display:none; }
+  .ch-menu.is-open { display:block; }
+  .ch-menu-item { display:flex; align-items:center; gap:10px; padding:10px 14px; font-size:13px; color:var(--text-primary); text-decoration:none; cursor:pointer; background:transparent; border:0; width:100%; font-family:var(--font-sans); }
+  .ch-menu-item:hover { background:var(--slate-50); }
+  .ch-menu-item svg { color:var(--text-muted); flex-shrink:0; }
+  .ch-menu-item.danger { color:var(--danger-700); }
+  .ch-menu-item.danger svg { color:var(--danger-500); }
+  .ch-menu-item.danger:hover { background:var(--danger-050); }
+  .co-table { width:100%; border-collapse:collapse; }
+  .co-table th { text-align:left; padding:14px 24px; font-size:13px; font-weight:700; color:var(--text-primary); border-bottom:1px solid var(--border-default); white-space:nowrap; }
+  .co-table td { padding:13px 24px; font-size:13.5px; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle); }
+  .co-row:hover td { background:var(--slate-50); }
+  .co-table tr:last-child td { border-bottom:0; }
+  .co-page { min-width:36px; height:36px; display:inline-grid; place-items:center; padding:0 8px; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--text-secondary); font:500 13px var(--font-sans); cursor:pointer; }
+  .co-page:hover { background:var(--slate-100); color:var(--text-primary); }
+  .co-page.is-active { background:var(--bg-surface); border-color:var(--border-strong); color:var(--text-primary); font-weight:600; box-shadow:var(--card-shadow-rest); cursor:default; }
+  .co-nav { width:36px; height:36px; display:inline-grid; place-items:center; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--text-secondary); cursor:pointer; }
+  .co-nav:hover:not([disabled]) { background:var(--slate-100); color:var(--text-primary); }
+  .co-nav[disabled] { opacity:.35; cursor:not-allowed; }
+  .co-ellipsis { min-width:36px; height:36px; display:inline-grid; place-items:center; color:var(--text-muted); }
+</style>
+</helmet>
+<div data-theme="{{ themeAttr }}" style="min-height:100vh; background:var(--bg-canvas); font-family:var(--font-sans); color:var(--text-primary); position:relative;">
+
+  <!-- ===== Top bar ===== -->
+  <header style="position:sticky; top:0; z-index:30; height:60px; display:flex; align-items:center; gap:16px; padding:0 20px; background:var(--bg-surface); border-bottom:1px solid var(--border-default);">
+    <button onClick="{{ toggleDrawer }}" aria-label="Open navigation" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+    </button>
+    <h1 style="margin:0; font-family:var(--font-display); font-size:21px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">Companies</h1>
+    <div style="flex:1;"></div>
+    <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg>
+    </button>
+    <div style="position:relative;">
+      <button onClick="{{ toggleMenu }}" aria-label="Account menu" style="width:34px; height:34px; border:0; padding:0; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+      </button>
+      <div onClick="{{ closeMenu }}" class="ch-menu {{ menuCls }}" style="position:fixed; inset:0; z-index:55;"></div>
+      <div class="ch-menu {{ menuCls }}" style="position:absolute; top:46px; right:0; z-index:56; width:228px; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-lg); box-shadow:var(--card-shadow-raised); overflow:hidden;">
+        <div style="padding:12px 14px; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; flex-shrink:0;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Alex Morgan</div>
+            <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">alex.morgan@skytek.com</div>
+          </div>
+        </div>
+        <a href="#" class="ch-menu-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>My Profile
+        </a>
+        <a href="index.html" class="ch-menu-item danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main style="padding:28px 28px 8px;">
+    <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); overflow:hidden;">
+      <div style="padding:18px 24px; border-bottom:1px solid var(--border-subtle);">
+        <h2 style="margin:0; font-family:var(--font-display); font-size:18px; font-weight:600; color:var(--text-primary);">Companies</h2>
+      </div>
+
+      <div data-scroll style="overflow-x:auto;">
+        <table class="co-table">
+          <thead>
+            <tr>
+              <th style="width:26%;">Company Name</th>
+              <th style="width:15%;">Location</th>
+              <th style="width:25%;">Industry</th>
+              <th style="width:13%;">Exposure</th>
+              <th>Risk Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ visibleCompanies }}" as="c" hint-placeholder-count="20">
+              <tr class="co-row">
+                <td><a href="#" class="ch-link">{{ c.name }}</a></td>
+                <td>{{ c.location }}</td>
+                <td>{{ c.industry }}</td>
+                <td>{{ c.exposure }}</td>
+                <td>
+                  <span style="display:inline-flex; align-items:center; justify-content:center; min-width:30px; padding:3px 9px; border-radius:var(--radius-pill); font-size:12px; font-weight:600; background:{{ c.riskBg }}; color:{{ c.riskFg }};">{{ c.risk }}</span>
+                </td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div style="display:flex; justify-content:center; align-items:center; gap:6px; padding:20px;">
+        <button class="co-nav" disabled="{{ prevDisabled }}" onClick="{{ goPrev }}" aria-label="Previous page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg>
+        </button>
+        <sc-for list="{{ pageItems }}" as="pi" hint-placeholder-count="5">
+          <sc-if value="{{ pi.ellipsis }}" hint-placeholder-val="{{ false }}">
+            <span class="co-ellipsis">…</span>
+          </sc-if>
+          <sc-if value="{{ pi.isPage }}" hint-placeholder-val="{{ true }}">
+            <button class="{{ pi.cls }}" onClick="{{ pi.go }}">{{ pi.label }}</button>
+          </sc-if>
+        </sc-for>
+        <button class="co-nav" disabled="{{ nextDisabled }}" onClick="{{ goNext }}" aria-label="Next page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer style="padding:24px 28px 32px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--text-muted);">
+    <a href="#" class="ch-link">About Skytek</a>
+    <div>© 2025 Skytek Limited&nbsp;&nbsp;|&nbsp;&nbsp;Powered by <a href="#" class="ch-link">skytek</a></div>
+  </footer>
+
+  <!-- ===== Sidebar drawer + scrim ===== -->
+  <div onClick="{{ closeDrawer }}" class="ch-scrim {{ drawerCls }}" style="position:fixed; inset:0; z-index:40; background:rgba(15,23,42,.45);"></div>
+  <aside class="ch-drawer {{ drawerCls }}" data-scroll style="position:fixed; top:0; left:0; bottom:0; z-index:50; width:300px; background:var(--bg-surface); border-right:1px solid var(--border-default); box-shadow:var(--card-shadow-raised); display:flex; flex-direction:column; overflow-y:auto;">
+    <div style="display:flex; align-items:center; gap:10px; padding:20px 18px 16px;">
+      <img src="images/skytek-cyber-hub-logo-black-landscape.png" alt="Cyber Hub — powered by Skytek" class="ch-brand-logo" style="height:34px; width:auto; max-width:205px; object-fit:contain; margin-right:auto;">
+      <button onClick="{{ closeDrawer }}" aria-label="Close navigation" style="width:30px; height:30px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-muted); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <nav style="padding:8px 14px; display:flex; flex-direction:column; gap:4px;">
+      <a href="Dashboard.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg>Dashboard
+      </a>
+      <a href="Reports.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8"></path></svg>Reports
+      </a>
+      <a href="SystemicRisk.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Systemic Risk
+      </a>
+      <a href="Companies.html" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); background:var(--brand-600); color:#fff; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 2px 6px rgba(45,127,251,.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"></path></svg>Companies
+      </a>
+    </nav>
+
+    <div style="padding:18px 18px 6px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">My Report Activity</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; background:var(--slate-50); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:{{ stat.bg }}; color:{{ stat.fg }};">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ stat.icon }}"></path></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:11.5px; color:var(--text-muted);">{{ stat.label }}</div>
+              <div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">{{ stat.value }}</div>
+              <div style="font-size:10.5px; color:var(--text-muted);">{{ stat.sub }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="padding:18px 18px 24px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">Subscription Details</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--info-100); color:var(--info-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription Start</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2024</div></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--danger-100); color:var(--danger-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription End</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2025</div></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { drawerOpen: false, menuOpen: false, dark: false, page: 1 };
+
+  PER_PAGE = 20;
+
+  buildCompanies() {
+    const page1 = [
+      { name: "Nucleus Devices", location: "North America", industry: "IT, technology and telecoms", exposure: "$3.2M", risk: 45 },
+      { name: "Coreware Systems", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$2.8M", risk: 38 },
+      { name: "Vertex Commerce", location: "Worldwide", industry: "Retail and consumer goods", exposure: "$4.1M", risk: 67 },
+      { name: "Quantyx", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$3.5M", risk: 52 },
+      { name: "Helios Social", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$2.9M", risk: 74 },
+      { name: "Voltic Motors", location: "Worldwide", industry: "Automotive and transportation", exposure: "$1.8M", risk: 89 },
+      { name: "Sterling Capital", location: "North America", industry: "Financial and utilities services", exposure: "$5.2M", risk: 43 },
+      { name: "Wellspring Health", location: "Worldwide", industry: "Healthcare", exposure: "$3.7M", risk: 29 },
+      { name: "Hearth Goods", location: "Worldwide", industry: "Consumer goods", exposure: "$2.1M", risk: 35 },
+      { name: "Silicon Forge", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$2.6M", risk: 92 },
+      { name: "Verigate Pay", location: "Worldwide", industry: "Financial and utilities services", exposure: "$1.9M", risk: 48 },
+      { name: "Northwind Retail", location: "North America", industry: "Retail and consumer goods", exposure: "$2.3M", risk: 56 },
+      { name: "Cardinal Pay", location: "Worldwide", industry: "Financial and utilities services", exposure: "$1.7M", risk: 41 },
+      { name: "Vantage Health", location: "North America", industry: "Healthcare", exposure: "$4.8M", risk: 63 },
+      { name: "Helix Pharma", location: "Worldwide", industry: "Healthcare", exposure: "$3.1M", risk: 37 },
+      { name: "Crispin Beverages", location: "Worldwide", industry: "Consumer goods", exposure: "$2.4M", risk: 31 },
+      { name: "Summit Snacks", location: "Worldwide", industry: "Consumer goods", exposure: "$2.2M", risk: 33 },
+      { name: "MegaMart", location: "Worldwide", industry: "Retail and consumer goods", exposure: "$6.1M", risk: 78 },
+      { name: "Nodeworks", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$1.5M", risk: 54 },
+      { name: "Coreframe Semiconductors", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$2.7M", risk: 61 },
+    ];
+    const locs = ["Worldwide", "North America", "Europe", "Asia Pacific"];
+    const inds = ["IT, technology and telecoms", "Retail and consumer goods", "Financial and utilities services", "Healthcare", "Consumer goods", "Automotive and transportation", "Media, leisure, entertainment"];
+    const pre = ["Nimbus", "Apex", "Lumen", "Orbit", "Strata", "Pinnacle", "Cobalt", "Vector", "Falcon", "Aurora", "Onyx", "Ironwood", "Cedar", "Atlas", "Polaris", "Zenith", "Halcyon", "Solstice", "Beacon", "Keystone", "Granite", "Sable", "Verdant", "Cinder", "Quill", "Tessel", "Brightline", "Northgate", "Eastwind", "Lattice", "Pivot", "Cascade", "Mosaic", "Ember", "Sentinel", "Larkspur", "Marble", "Vellum", "Cresta", "Dovetail"];
+    const suf = ["Systems", "Holdings", "Industries", "Labs", "Group", "Networks", "Dynamics", "Solutions", "Partners", "Technologies", "Capital", "Health", "Logistics", "Energy", "Retail Co.", "Media", "Robotics", "Foods", "Analytics", "Ventures"];
+    const out = page1.slice();
+    for (let i = 0; i < 100; i++) {
+      const name = pre[i % pre.length] + " " + suf[(i * 3 + 7) % suf.length];
+      const exposure = "$" + (1.2 + ((i * 7) % 58) / 10).toFixed(1) + "M";
+      const risk = 22 + ((i * 29 + 11) % 70);
+      out.push({ name, location: locs[(i * 5) % locs.length], industry: inds[(i * 3) % inds.length], exposure, risk });
+    }
+    return out;
+  }
+
+  riskStyle(score) {
+    return score < 55
+      ? { riskBg: "var(--success-100)", riskFg: "var(--success-700)" }
+      : { riskBg: "var(--warning-100)", riskFg: "var(--warning-700)" };
+  }
+
+  goToPage(p) { this.setState({ page: p }); window.scrollTo(0, 0); }
+
+  renderVals() {
+    const all = this.buildCompanies();
+    const totalPages = Math.ceil(all.length / this.PER_PAGE);
+    const page = Math.min(this.state.page, totalPages);
+    const start = (page - 1) * this.PER_PAGE;
+    const visible = all.slice(start, start + this.PER_PAGE).map(c => ({ ...c, ...this.riskStyle(c.risk) }));
+
+    // pagination items
+    const items = [];
+    const addPage = (p) => items.push({ label: String(p), isPage: true, ellipsis: false, cls: p === page ? "co-page is-active" : "co-page", go: () => this.goToPage(p) });
+    const addEll = () => items.push({ label: "…", isPage: false, ellipsis: true });
+    if (totalPages <= 6) {
+      for (let p = 1; p <= totalPages; p++) addPage(p);
+    } else if (page <= 3) {
+      addPage(1); addPage(2); addPage(3); addEll(); addPage(totalPages);
+    } else if (page >= totalPages - 2) {
+      addPage(1); addEll(); addPage(totalPages - 2); addPage(totalPages - 1); addPage(totalPages);
+    } else {
+      addPage(1); addEll(); addPage(page - 1); addPage(page); addPage(page + 1); addEll(); addPage(totalPages);
+    }
+
+    const stats = [
+      { label: "Reports Generated", value: "8", sub: "", icon: "M3 3v18h18M18 17V9M13 17V5M8 17v-3", bg: "var(--brand-100)", fg: "var(--brand-600)" },
+      { label: "Avg. Scan Time", value: "2h 45m", sub: "", icon: "M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z", bg: "var(--success-100)", fg: "var(--success-700)" },
+      { label: "Total Monthly Allowance", value: "50 Hours", sub: "", icon: "M10 2h4M12 14l2.5-2.5M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z", bg: "var(--info-100)", fg: "var(--info-700)" },
+      { label: "Time Remaining", value: "28h 15m", sub: "Renews Dec 1, 2024", icon: "M5 22h14M5 2h14M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4A2 2 0 0 0 7 17.8V22", bg: "var(--warning-100)", fg: "var(--warning-700)" },
+    ];
+
+    const open = this.state.drawerOpen;
+    return {
+      visibleCompanies: visible,
+      pageItems: items,
+      prevDisabled: page <= 1,
+      nextDisabled: page >= totalPages,
+      goPrev: () => this.goToPage(Math.max(1, page - 1)),
+      goNext: () => this.goToPage(Math.min(totalPages, page + 1)),
+      stats,
+      themeAttr: this.state.dark ? "dark" : "",
+      themeIcon: this.state.dark
+        ? "M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+        : "M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z",
+      drawerCls: open ? "is-open" : "",
+      menuCls: this.state.menuOpen ? "is-open" : "",
+      toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      closeDrawer: () => this.setState({ drawerOpen: false }),
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      toggleTheme: () => this.setState(s => ({ dark: !s.dark })),
+    };
+  }
+}
+</script>
+</body>
+</html>

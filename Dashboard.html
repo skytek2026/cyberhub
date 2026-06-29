@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="ds-skytek/styles.css">
+<script src="ds-skytek/ds_bundle.js"></script>
+<style>
+  html, body { margin:0; padding:0; }
+  body { background: var(--bg-canvas); }
+  [data-theme="dark"] {
+    --bg-app:#0B1220; --bg-canvas:#0B1220; --bg-surface:#121A2B; --bg-sunken:#0f1626; --bg-muted:#1B2438;
+    --text-primary:#EEF2F8; --text-secondary:#9FB0C7; --text-muted:#73839C;
+    --border-subtle:#1E2A40; --border-default:#26344E; --border-strong:#374864;
+    --slate-50:#162033; --slate-100:#1B2640; --slate-150:#1f2a46; --slate-200:#26344E; --slate-300:#37486a;
+    --white:#121A2B;
+  }
+  @keyframes ch-drawer-in { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+  .ch-link { color: var(--text-link); text-decoration: none; font-weight: 600; }
+  .ch-link:hover { text-decoration: underline; color: var(--brand-600); }
+  .ch-brand-logo { display:block; }
+  [data-theme="dark"] .ch-brand-logo { filter: invert(1); }
+  .ch-drawer { transform: translateX(-100%); transition: transform .28s cubic-bezier(0.16,1,0.3,1); }
+  .ch-drawer.is-open { transform: translateX(0); }
+  .ch-scrim { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+  .ch-scrim.is-open { opacity: 1; pointer-events: auto; }
+  .ch-menu { display:none; }
+  .ch-menu.is-open { display:block; }
+  .ch-menu-item { display:flex; align-items:center; gap:10px; padding:10px 14px; font-size:13px; color:var(--text-primary); text-decoration:none; cursor:pointer; background:transparent; border:0; width:100%; font-family:var(--font-sans); }
+  .ch-menu-item:hover { background:var(--slate-50); }
+  .ch-menu-item svg { color:var(--text-muted); flex-shrink:0; }
+  .ch-menu-item.danger { color:var(--danger-700); }
+  .ch-menu-item.danger svg { color:var(--danger-500); }
+  .ch-menu-item.danger:hover { background:var(--danger-050); }
+  @keyframes l2-fade-in { from { opacity:0; } to { opacity:1; } }
+  @keyframes l2-pop-in { from { opacity:0; transform: translateY(8px) scale(.98); } to { opacity:1; transform: translateY(0) scale(1); } }
+  @keyframes l2-snack-in { from { opacity:0; transform: translateY(-14px); } to { opacity:1; transform: translateY(0); } }
+  .l2-input { font-family:var(--font-sans); font-size:14px; color:var(--text-primary); background:var(--slate-50); border:1px solid var(--border-default); border-radius:var(--radius-md); padding:0 14px; height:46px; width:100%; box-sizing:border-box; }
+  .l2-input::placeholder { color:var(--text-muted); }
+  .l2-input:hover { border-color:var(--border-strong); }
+  .l2-input:focus { outline:0; border-color:var(--brand-400); box-shadow:var(--shadow-focus); }
+  .l2-textarea { font-family:var(--font-sans); font-size:14px; color:var(--text-primary); background:var(--slate-50); border:1px solid var(--border-default); border-radius:var(--radius-md); padding:11px 14px; width:100%; min-height:84px; resize:vertical; box-sizing:border-box; }
+  .l2-textarea::placeholder { color:var(--text-muted); }
+  .l2-textarea:hover { border-color:var(--border-strong); }
+  .l2-textarea:focus { outline:0; border-color:var(--brand-400); box-shadow:var(--shadow-focus); }
+  .l2-label { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:7px; display:block; }
+</style>
+</helmet>
+<div data-theme="{{ themeAttr }}" style="min-height:100vh; background:var(--bg-canvas); font-family:var(--font-sans); color:var(--text-primary); position:relative;">
+
+  <!-- ===== Top bar ===== -->
+  <header style="position:sticky; top:0; z-index:30; height:60px; display:flex; align-items:center; gap:16px; padding:0 20px; background:var(--bg-surface); border-bottom:1px solid var(--border-default);">
+    <button onClick="{{ toggleDrawer }}" aria-label="Open navigation" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+    </button>
+    <h1 style="margin:0; font-family:var(--font-display); font-size:21px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">Dashboard</h1>
+    <div style="flex:1;"></div>
+    <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg>
+    </button>
+    <div style="position:relative;">
+      <button onClick="{{ toggleMenu }}" aria-label="Account menu" style="width:34px; height:34px; border:0; padding:0; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+      </button>
+      <div onClick="{{ closeMenu }}" class="ch-menu {{ menuCls }}" style="position:fixed; inset:0; z-index:55;"></div>
+      <div class="ch-menu {{ menuCls }}" style="position:absolute; top:46px; right:0; z-index:56; width:228px; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-lg); box-shadow:var(--card-shadow-raised); overflow:hidden;">
+        <div style="padding:12px 14px; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; flex-shrink:0;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Alex Morgan</div>
+            <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">alex.morgan@skytek.com</div>
+          </div>
+        </div>
+        <a href="#" class="ch-menu-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>My Profile
+        </a>
+        <a href="index.html" class="ch-menu-item danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main style="padding:40px 28px 8px;">
+
+    <!-- Generate a New Report -->
+    <h2 style="text-align:center; margin:0 0 28px; font-family:var(--font-display); font-size:28px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">Generate a New Report</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:920px; margin:0 auto;">
+
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); padding:24px; box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; gap:22px; min-height:140px;">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#F472B6,#DB2777); display:grid; place-items:center; color:#fff; flex-shrink:0; box-shadow:0 4px 10px rgba(219,39,119,.32);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18 17V9M13 17V5M8 17v-3"></path></svg>
+          </div>
+          <h3 style="margin:3px 0 0; font-family:var(--font-display); font-size:19px; font-weight:600; color:var(--text-primary); flex:1;">Level 1 Report</h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16v-4m0-4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z"></path></svg>
+        </div>
+        <a href="ReportGenerator.html" class="ds-btn ds-btn--primary ds-btn--lg" style="width:100%; height:46px; font-size:14px; gap:10px; text-decoration:none;">Begin a Level 1 Report
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg>
+        </a>
+      </section>
+
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); padding:24px; box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; gap:22px; min-height:140px;">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#C084FC,#9333EA); display:grid; place-items:center; color:#fff; flex-shrink:0; box-shadow:0 4px 10px rgba(147,51,234,.32);">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"></path></svg>
+          </div>
+          <h3 style="margin:3px 0 0; font-family:var(--font-display); font-size:19px; font-weight:600; color:var(--text-primary); flex:1;">Level 2 Report</h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16v-4m0-4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z"></path></svg>
+        </div>
+        <button onClick="{{ openL2 }}" class="ds-btn ds-btn--primary ds-btn--lg" style="width:100%; height:46px; font-size:14px; gap:10px;">Order a Level 2 Report
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg>
+        </button>
+      </section>
+    </div>
+
+    <!-- My Report Activity -->
+    <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); margin-top:32px; overflow:hidden;">
+      <div style="padding:14px 24px; border-bottom:1px solid var(--border-subtle);">
+        <h3 style="margin:0; font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary);">My Report Activity</h3>
+      </div>
+      <div style="padding:24px; display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:14px; padding:16px; background:var(--slate-50); border:1px solid var(--border-subtle); border-radius:var(--radius-lg);">
+            <div style="width:40px; height:40px; border-radius:10px; display:grid; place-items:center; flex-shrink:0; background:{{ stat.bg }}; color:{{ stat.fg }};">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ stat.icon }}"></path></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:12.5px; color:var(--text-muted);">{{ stat.label }}</div>
+              <div style="font-family:var(--font-display); font-size:19px; font-weight:600; color:var(--text-primary); margin-top:1px;">{{ stat.value }}</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:1px;">{{ stat.sub }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Most recent cyber reports -->
+    <h2 style="text-align:center; margin:42px 0 6px; font-family:var(--font-display); font-size:28px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">Most recent cyber reports</h2>
+    <p style="text-align:center; max-width:640px; margin:0 auto 26px; font-size:14px; color:var(--text-secondary); line-height:1.55;">These are the most recent reports we have available. The entire list of reports can be seen here on the <a href="Reports.html" class="ch-link">Reports Page</a></p>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; align-items:stretch;">
+      <sc-for list="{{ reports }}" as="r" hint-placeholder-count="8">
+        <dc-import name="ReportCard" report="{{ r }}" hint-size="100%,560px"></dc-import>
+      </sc-for>
+    </div>
+
+    <div style="display:flex; justify-content:center; margin:28px 0 8px;">
+      <a href="Reports.html" class="ds-btn ds-btn--secondary ds-btn--lg" style="height:42px; padding:0 24px;">View All Reports</a>
+    </div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer style="padding:24px 28px 32px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--text-muted);">
+    <a href="#" class="ch-link">About Skytek</a>
+    <div>© 2025 Skytek Limited&nbsp;&nbsp;|&nbsp;&nbsp;Powered by <a href="#" class="ch-link">skytek</a></div>
+  </footer>
+
+  <!-- ===== Level 2 Report modal ===== -->
+  <sc-if value="{{ l2Open }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:24px;">
+    <div onClick="{{ closeL2 }}" style="position:absolute; inset:0; background:rgba(15,23,42,.5); animation:l2-fade-in .18s ease;"></div>
+    <div role="dialog" aria-modal="true" aria-label="Level 2 Report Request" style="position:relative; z-index:1; width:min(94vw,440px); background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-raised); padding:24px 28px 26px; animation:l2-pop-in .2s cubic-bezier(0.16,1,0.3,1);">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px;">
+        <h2 style="margin:0; font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--text-primary);">Level 2 Report Request</h2>
+        <button type="button" onClick="{{ closeL2 }}" aria-label="Close" style="width:30px; height:30px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-muted); cursor:pointer; flex-shrink:0;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <p style="margin:0 0 20px; text-align:center; font-size:14px; color:var(--text-secondary); line-height:1.55;">Hi <strong style="color:var(--text-primary);">Paul</strong><br>You are about to order a Level 2 Report. Fill out the details below to continue.</p>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div>
+          <label class="l2-label" for="l2d-name">Company Name:</label>
+          <div style="position:relative;">
+            <input id="l2d-name" type="text" class="l2-input" placeholder="Enter company name" style="padding-right:42px;" value="{{ l2Form.name }}" onChange="{{ onL2Name }}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); pointer-events:none;"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"></path></svg>
+          </div>
+        </div>
+        <div>
+          <label class="l2-label" for="l2d-web">Company Website:</label>
+          <div style="position:relative;">
+            <input id="l2d-web" type="url" class="l2-input" placeholder="Enter website URL" style="padding-right:42px;" value="{{ l2Form.website }}" onChange="{{ onL2Website }}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); pointer-events:none;"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg>
+          </div>
+        </div>
+        <div>
+          <label class="l2-label" for="l2d-comments">Comments:</label>
+          <textarea id="l2d-comments" class="l2-textarea" placeholder="Enter any additional comments" value="{{ l2Form.comments }}" onChange="{{ onL2Comments }}"></textarea>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:center; gap:12px; margin-top:24px;">
+        <button type="button" onClick="{{ closeL2 }}" class="ds-btn ds-btn--secondary ds-btn--lg" style="padding:0 24px;">Cancel</button>
+        <button type="button" onClick="{{ submitL2 }}" class="ds-btn ds-btn--primary ds-btn--lg" style="padding:0 26px;">Continue</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== Snackbar ===== -->
+  <sc-if value="{{ snackOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed; left:50%; top:28px; transform:translateX(-50%); z-index:120; display:flex; align-items:center; gap:12px; padding:13px 18px; background:var(--success-700); color:#fff; border-radius:var(--radius-lg); box-shadow:var(--card-shadow-raised); font-size:14px; font-weight:500; animation:l2-snack-in .26s cubic-bezier(0.16,1,0.3,1);">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20 6 9 17l-5-5"></path></svg>
+    Level 2 Report request submitted successfully
+  </div>
+  </sc-if>
+
+  <!-- ===== Sidebar drawer + scrim ===== -->
+  <div onClick="{{ closeDrawer }}" class="ch-scrim {{ drawerCls }}" style="position:fixed; inset:0; z-index:40; background:rgba(15,23,42,.45);"></div>
+  <aside class="ch-drawer {{ drawerCls }}" data-scroll style="position:fixed; top:0; left:0; bottom:0; z-index:50; width:300px; background:var(--bg-surface); border-right:1px solid var(--border-default); box-shadow:var(--card-shadow-raised); display:flex; flex-direction:column; overflow-y:auto;">
+    <!-- Brand -->
+    <div style="display:flex; align-items:center; gap:10px; padding:20px 18px 16px;">
+      <img src="images/skytek-cyber-hub-logo-black-landscape.png" alt="Cyber Hub — powered by Skytek" class="ch-brand-logo" style="height:34px; width:auto; max-width:205px; object-fit:contain; margin-right:auto;">
+      <button onClick="{{ closeDrawer }}" aria-label="Close navigation" style="width:30px; height:30px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-muted); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Nav -->
+    <nav style="padding:8px 14px; display:flex; flex-direction:column; gap:4px;">
+      <a href="#" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); background:var(--brand-600); color:#fff; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 2px 6px rgba(45,127,251,.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg>Dashboard
+      </a>
+      <a href="Reports.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8"></path></svg>Reports
+      </a>
+      <a href="SystemicRisk.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Systemic Risk
+      </a>
+      <a href="Companies.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"></path></svg>Companies
+      </a>
+    </nav>
+
+    <!-- My Report Activity -->
+    <div style="padding:18px 18px 6px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">My Report Activity</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; background:var(--slate-50); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:{{ stat.bg }}; color:{{ stat.fg }};">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ stat.icon }}"></path></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:11.5px; color:var(--text-muted);">{{ stat.label }}</div>
+              <div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">{{ stat.value }}</div>
+              <div style="font-size:10.5px; color:var(--text-muted);">{{ stat.sub }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- Subscription Details -->
+    <div style="padding:18px 18px 24px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">Subscription Details</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--info-100); color:var(--info-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription Start</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2024</div></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--danger-100); color:var(--danger-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription End</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2025</div></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    drawerOpen: false,
+    menuOpen: false,
+    dark: false,
+    l2Open: false,
+    snackOpen: false,
+    l2Form: { name: "", website: "", comments: "" },
+    reports: [
+      { id: 7, name: "Voltic Motors", score: 134, desc: "Voltic Motors is an electric vehicle and clean energy company that designs and manufactures electric vehicles, battery energy storage systems, and solar panels for residential and commercial use\u2026", createdAt: "2024-06-01", industry: "Automotive and transport", website: "volticmotors.com", countries: "Worldwide", scanDuration: "1 hour 55 minutes", reportLevel: "Level 2" },
+      { id: 5, name: "Fiexa", score: 86, desc: "Fiexa is a global fintech and payments company with solutions for banking, global commerce, merchant acquiring, billing and payments, and point-of-sale services across multiple regions\u2026", createdAt: "2024-06-08", industry: "Financial and utilities services", website: "fiexa.com", countries: "North America", scanDuration: "2 hours 45 minutes", reportLevel: "Level 1" },
+      { id: 3, name: "Quantyx", score: 54, desc: "Quantyx is a multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing\u2026", createdAt: "2024-06-05", industry: "IT, technology and telecoms", website: "quantyx.com", countries: "Worldwide", scanDuration: "2 hours 20 minutes", reportLevel: "Level 1" },
+      { id: 4, name: "Streamline", score: 46, desc: "Streamline is a global streaming entertainment service with TV series, documentaries, and feature films across a wide variety of genres and languages. Members can watch as much as they want, anytime,\u2026", createdAt: "2024-06-18", industry: "Media, leisure, entertainment", website: "streamline.com", countries: "Worldwide", scanDuration: "2 hours 10 minutes", reportLevel: "Level 1" },
+      { id: 1, name: "Meridian Media", score: 52, desc: "Meridian Media brings you the latest national news, world news, international news and up to the minute reports on breaking Irish news stories and news from around the world. Watch and listen to\u2026", createdAt: "2024-05-28", industry: "Media, leisure, entertainment", website: "meridianmedia.com", countries: "Ireland", scanDuration: "3 hours 15 minutes", reportLevel: "Level 1" },
+      { id: 6, name: "Coreware Systems", score: 70, desc: "Coreware Systems is a multinational technology company that develops, manufactures, licenses, supports, and sells computer software, consumer electronics, personal computers, and related services\u2026", createdAt: "2024-06-15", industry: "IT, technology and telecoms", website: "coreware.com", countries: "Worldwide", scanDuration: "4 hours 12 minutes", reportLevel: "Level 2" },
+      { id: 2, name: "Nucleus Devices", score: 37, desc: "Nucleus Devices is a multinational technology company that specializes in consumer electronics, computer software, and online services. It is among the world's largest technology firms by revenue\u2026", createdAt: "2024-06-10", industry: "IT, technology and telecoms", website: "nucleusdevices.com", countries: "Worldwide", scanDuration: "3 hours 45 minutes", reportLevel: "Level 2" },
+      { id: 8, name: "Soundwave", score: 61, desc: "Soundwave is a digital music, podcast, and video streaming service that gives access to millions of songs and other content from creators all over the world on any device\u2026", createdAt: "2024-06-03", industry: "Media, leisure, entertainment", website: "soundwave.com", countries: "Worldwide", scanDuration: "2 hours 5 minutes", reportLevel: "Level 1" },
+    ],
+  };
+
+  removeReport(id) {
+    this.setState(s => ({ reports: s.reports.filter(r => r.id !== id) }));
+  }
+
+  setL2Field(key, value) {
+    this.setState(s => ({ l2Form: { ...s.l2Form, [key]: value } }));
+  }
+
+  submitL2() {
+    this.setState({ l2Open: false, snackOpen: true, l2Form: { name: "", website: "", comments: "" } });
+    clearTimeout(this._snackT);
+    this._snackT = setTimeout(() => this.setState({ snackOpen: false }), 3600);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._snackT);
+  }
+
+  renderVals() {
+    const C = 2 * Math.PI * 30; // circumference, r=30
+    const riskStyle = (score) => {
+      if (score >= 120) return { donutColor: "var(--danger-500)", badgeClass: "ds-badge--danger" };
+      if (score >= 60)  return { donutColor: "var(--warning-500)", badgeClass: "ds-badge--warning" };
+      return { donutColor: "var(--success-500)", badgeClass: "ds-badge--success" };
+    };
+    const viewHref = (r) => "CompanyReport.html?c=" + encodeURIComponent(r.name) + "&w=" + encodeURIComponent(r.website) + "&ind=" + encodeURIComponent(r.industry) + "&co=" + encodeURIComponent(r.countries) + "&s=" + r.score + "&dt=" + encodeURIComponent(r.createdAt) + "&dur=" + encodeURIComponent(r.scanDuration) + "&lvl=" + encodeURIComponent(r.reportLevel) + "&d=" + encodeURIComponent(r.desc);
+    const reports = this.state.reports.map(r => {
+      const len = Math.min(r.score / 120, 1) * C;
+      return { ...r, ...riskStyle(r.score), dash: len.toFixed(1) + " " + C.toFixed(1), viewHref: viewHref(r), onDelete: () => this.removeReport(r.id) };
+    });
+
+    const stats = [
+      { label: "Reports Generated", value: "8", sub: "", icon: "M3 3v18h18M18 17V9M13 17V5M8 17v-3", bg: "var(--brand-100)", fg: "var(--brand-600)" },
+      { label: "Avg. Scan Time", value: "2h 45m", sub: "", icon: "M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z", bg: "var(--success-100)", fg: "var(--success-700)" },
+      { label: "Total Monthly Allowance", value: "50 Hours", sub: "", icon: "M10 2h4M12 14l2.5-2.5M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z", bg: "#EDE4FE", fg: "#7C3AED" },
+      { label: "Time Remaining", value: "28h 15m", sub: "Renews Dec 1, 2024", icon: "M5 22h14M5 2h14M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4A2 2 0 0 0 7 17.8V22", bg: "var(--warning-100)", fg: "var(--warning-700)" },
+    ];
+
+    const open = this.state.drawerOpen;
+    return {
+      reports,
+      stats,
+      themeAttr: this.state.dark ? "dark" : "",
+      themeIcon: this.state.dark
+        ? "M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+        : "M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z",
+      drawerCls: open ? "is-open" : "",
+      menuCls: this.state.menuOpen ? "is-open" : "",
+      toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      closeDrawer: () => this.setState({ drawerOpen: false }),
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      toggleTheme: () => this.setState(s => ({ dark: !s.dark })),
+      l2Open: this.state.l2Open,
+      snackOpen: this.state.snackOpen,
+      l2Form: this.state.l2Form,
+      openL2: () => this.setState({ l2Open: true }),
+      closeL2: () => this.setState({ l2Open: false }),
+      submitL2: () => this.submitL2(),
+      onL2Name: (e) => this.setL2Field("name", e.target.value),
+      onL2Website: (e) => this.setL2Field("website", e.target.value),
+      onL2Comments: (e) => this.setL2Field("comments", e.target.value),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="ds-skytek/styles.css">
+<script src="ds-skytek/ds_bundle.js"></script>
+<script src="https://unpkg.com/framer-motion@11.11.17/dist/framer-motion.js" crossorigin="anonymous"></script>
+<style>
+  html, body { margin:0; padding:0; }
+  body { background: var(--bg-canvas); }
+  [data-theme="dark"] {
+    --bg-app:#0B1220; --bg-canvas:#0B1220; --bg-surface:#121A2B; --bg-sunken:#0f1626; --bg-muted:#1B2438;
+    --text-primary:#EEF2F8; --text-secondary:#9FB0C7; --text-muted:#73839C;
+    --border-subtle:#1E2A40; --border-default:#26344E; --border-strong:#374864;
+    --slate-50:#162033; --slate-100:#1B2640; --slate-150:#1f2a46; --slate-200:#26344E; --slate-300:#37486a;
+    --white:#121A2B;
+  }
+  .ch-link { color: var(--text-link); text-decoration: none; font-weight: 600; }
+  .ch-link:hover { text-decoration: underline; color: var(--brand-600); }
+  .ch-brand-logo { display:block; }
+  [data-theme="dark"] .ch-brand-logo { filter: invert(1); }
+  .ch-drawer { transform: translateX(-100%); transition: transform .28s cubic-bezier(0.16,1,0.3,1); }
+  .ch-drawer.is-open { transform: translateX(0); }
+  .ch-scrim { opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+  .ch-scrim.is-open { opacity: 1; pointer-events: auto; }
+  .ch-menu { display:none; }
+  .ch-menu.is-open { display:block; }
+  .ch-menu-item { display:flex; align-items:center; gap:10px; padding:10px 14px; font-size:13px; color:var(--text-primary); text-decoration:none; cursor:pointer; background:transparent; border:0; width:100%; font-family:var(--font-sans); }
+  .ch-menu-item:hover { background:var(--slate-50); }
+  .ch-menu-item svg { color:var(--text-muted); flex-shrink:0; }
+  .ch-menu-item.danger { color:var(--danger-700); }
+  .ch-menu-item.danger svg { color:var(--danger-500); }
+  .ch-menu-item.danger:hover { background:var(--danger-050); }
+  .exp-row { display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:var(--radius-md); cursor:pointer; font-size:13px; color:var(--text-primary); }
+  .exp-row:hover { background:var(--slate-50); }
+  .exp-row.is-active { background:var(--brand-050); }
+  .tech-row:hover { background:var(--slate-50); }
+  .co-table { width:100%; border-collapse:collapse; }
+  .co-table th { text-align:left; padding:14px 24px; font-size:13px; font-weight:700; color:var(--text-primary); border-bottom:1px solid var(--border-default); white-space:nowrap; }
+  .co-table td { padding:14px 24px; font-size:13.5px; color:var(--text-secondary); border-bottom:1px solid var(--border-subtle); }
+  .co-table tr:last-child td { border-bottom:0; }
+  .sr-trow:hover td { background:var(--slate-50); }
+</style>
+</helmet>
+<div data-theme="{{ themeAttr }}" style="min-height:100vh; background:var(--bg-canvas); font-family:var(--font-sans); color:var(--text-primary); position:relative;">
+
+  <!-- ===== Top bar ===== -->
+  <header style="position:sticky; top:0; z-index:30; height:60px; display:flex; align-items:center; gap:16px; padding:0 20px; background:var(--bg-surface); border-bottom:1px solid var(--border-default);">
+    <button onClick="{{ toggleDrawer }}" aria-label="Open navigation" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+    </button>
+    <h1 style="margin:0; font-family:var(--font-display); font-size:21px; font-weight:600; letter-spacing:-0.01em; color:var(--text-primary);">Systemic Risk</h1>
+    <div style="flex:1;"></div>
+    <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:38px; height:38px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-secondary); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg>
+    </button>
+    <div style="position:relative;">
+      <button onClick="{{ toggleMenu }}" aria-label="Account menu" style="width:34px; height:34px; border:0; padding:0; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+      </button>
+      <div onClick="{{ closeMenu }}" class="ch-menu {{ menuCls }}" style="position:fixed; inset:0; z-index:55;"></div>
+      <div class="ch-menu {{ menuCls }}" style="position:absolute; top:46px; right:0; z-index:56; width:228px; background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-lg); box-shadow:var(--card-shadow-raised); overflow:hidden;">
+        <div style="padding:12px 14px; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+          <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--brand-500),var(--brand-700)); display:grid; place-items:center; color:#fff; flex-shrink:0;">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Alex Morgan</div>
+            <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">alex.morgan@skytek.com</div>
+          </div>
+        </div>
+        <a href="#" class="ch-menu-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path></svg>My Profile
+        </a>
+        <a href="index.html" class="ch-menu-item danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main style="padding:24px 28px 8px;">
+
+    <!-- Top 4 cards -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; align-items:stretch;">
+
+      <!-- Portfolio Aggregation -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <div style="margin:-16px -18px 14px; padding:13px 18px 14px; border-bottom:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:11px;">
+          <h3 style="margin:0; font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Portfolio Aggregation</h3>
+          {{ portTabs }}
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 60px 70px; gap:10px; padding:14px 4px 8px; font-size:12px; font-weight:600; color:var(--text-primary);">
+          <span>Name</span><span>Risk</span><span style="text-align:right;">Exposure</span>
+        </div>
+        <div data-scroll style="max-height:150px; overflow-y:auto;">
+          <sc-for list="{{ portfolioRows }}" as="p" hint-placeholder-count="4">
+            <div style="display:grid; grid-template-columns:1fr 60px 70px; gap:10px; padding:9px 4px; border-top:1px solid var(--border-subtle); font-size:13px; align-items:center;">
+              <div style="display:flex; align-items:center; gap:7px; min-width:0; padding-left:{{ p.indent }};">
+                <sc-if value="{{ p.isGroup }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ p.toggle }}" aria-label="Toggle portfolios" style="display:flex; align-items:center; gap:5px; background:none; border:0; padding:0; cursor:pointer; flex-shrink:0;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate({{ p.rot }}); transition:transform .15s;"><path d="m9 18 6-6-6-6"></path></svg>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--brand-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path></svg>
+                  </button>
+                </sc-if>
+                <a href="#" class="ch-link" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:{{ p.weight }};">{{ p.name }}</a>
+              </div>
+              <span style="color:var(--text-secondary);">{{ p.risk }}</span>
+              <span style="text-align:right; color:var(--text-primary); font-variant-numeric:tabular-nums;">{{ p.exposure }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div class="ds-card-foot" style="margin:auto -18px -16px; border-radius:0 0 var(--radius-xl) var(--radius-xl); justify-content:center; gap:10px;">
+          <button class="ds-btn ds-btn--ghost ds-btn--sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add Portfolio</button>
+          <a href="#" class="ds-btn ds-btn--ghost ds-btn--sm">All Portfolios &amp; Groups<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg></a>
+        </div>
+      </section>
+
+      <!-- Exposure Aggregation -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <h3 style="margin:-16px -18px 0; padding:13px 18px; border-bottom:1px solid var(--border-subtle); font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Exposure Aggregation</h3>
+        <div style="text-align:center; margin:22px 0 26px;">
+          <div style="font-size:14px; color:var(--text-secondary);">Our Exposure:</div>
+          <div style="font-family:var(--font-display); font-size:34px; font-weight:700; color:var(--success-500); margin-top:4px; letter-spacing:-0.01em;">$289.6M</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <sc-for list="{{ exposureCats }}" as="ec" hint-placeholder-count="3">
+            <div class="{{ ec.cls }}" onClick="{{ ec.go }}" style="padding-left:{{ ec.indent }}; gap:0px;">
+              <sc-if value="{{ ec.isCat }}" hint-placeholder-val="{{ true }}">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate({{ ec.rot }}); transition:transform .15s; flex-shrink:0;"><path d="m9 18 6-6-6-6"></path></svg>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--brand-500)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"></path></svg>
+              </sc-if>
+              <span style="flex:1; min-width:0; font-weight:{{ ec.weight }};">{{ ec.name }}</span>
+              <sc-if value="{{ ec.exposure }}" hint-placeholder-val="">
+                <span style="color:var(--text-secondary); font-variant-numeric:tabular-nums;">{{ ec.exposure }}</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- Exposure By Technology -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <h3 style="margin:-16px -18px 0; padding:13px 18px; border-bottom:1px solid var(--border-subtle); font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Exposure By Technology</h3>
+        <div style="display:flex; justify-content:space-between; padding:10px 8px 8px; font-size:12px; font-weight:600; color:var(--text-primary); border-bottom:1px solid var(--border-subtle);"><span>Name</span><span>Our Exposure</span></div>
+        <div data-scroll style="overflow-y:auto; max-height:236px;">
+          <sc-for list="{{ techRows }}" as="t" hint-placeholder-count="8">
+            <div class="tech-row" onClick="{{ t.toggle }}" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 8px; padding-left:{{ t.indent }}; font-size:13px; border-bottom:1px solid var(--border-subtle); cursor:{{ t.cursor }};">
+              <span style="display:inline-flex; align-items:center; gap:7px; min-width:0; color:var(--text-primary);">
+                <sc-if value="{{ t.isTech }}" hint-placeholder-val="{{ true }}">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate({{ t.rot }}); transition:transform .15s; flex-shrink:0;"><path d="m9 18 6-6-6-6"></path></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-500)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"></path></svg>
+                </sc-if>
+                <sc-if value="{{ t.isTech }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-weight:{{ t.weight }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.name }}</span>
+                </sc-if>
+                <sc-if value="{{ t.isCompany }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ t.href }}" class="ch-link" style="font-weight:{{ t.weight }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.name }}</a>
+                </sc-if>
+              </span>
+              <span style="color:var(--text-secondary); font-variant-numeric:tabular-nums; flex-shrink:0;">{{ t.exposure }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- Alerts -->
+      <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); display:flex; flex-direction:column; min-height:344px; padding:16px 18px;">
+        <h3 style="margin:-16px -18px 0; padding:13px 18px; border-bottom:1px solid var(--border-subtle); font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--text-primary);">Alerts</h3>
+        <div style="display:grid; grid-template-columns:1.5fr 1fr 0.7fr auto; gap:8px; padding:10px 4px 8px; font-size:12px; font-weight:600; color:var(--text-primary); border-bottom:1px solid var(--border-subtle);"><span>Name</span><span>Date</span><span>Policies</span><span style="text-align:right;">Severity</span></div>
+        <div data-scroll style="overflow-y:auto; max-height:170px;">
+          <sc-for list="{{ alertRows }}" as="a" hint-placeholder-count="4">
+            <div style="display:grid; grid-template-columns:1.5fr 1fr 0.7fr auto; gap:8px; padding:10px 4px; font-size:12.5px; align-items:center; border-bottom:1px solid var(--border-subtle);">
+              <a href="#" class="ch-link" style="font-size:12.5px; white-space:nowrap;">{{ a.cve }}</a>
+              <span style="color:var(--text-secondary);">{{ a.date }}</span>
+              <span style="color:var(--text-secondary);">{{ a.policies }}</span>
+              <span style="text-align:right;"><span class="ds-badge {{ a.sevClass }}">{{ a.severity }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+        <div class="ds-card-foot" style="margin:auto -18px -16px; border-radius:0 0 var(--radius-xl) var(--radius-xl); justify-content:center;">
+          <a href="#" class="ds-btn ds-btn--ghost ds-btn--sm">All Alerts<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"></path></svg></a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Line chart -->
+    <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); margin-top:20px; padding:20px 24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin:-20px -24px 18px; padding:12px 24px; border-bottom:1px solid var(--border-subtle);">
+        <h3 style="margin:0; font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary);">Exposure Aggregation (last 12 months)</h3>
+        <select class="ds-input ds-select" style="width:168px; height:36px;"><option>Last 12 Months</option><option>Last 6 Months</option><option>Last 24 Months</option></select>
+      </div>
+      {{ lineChartEl }}
+    </section>
+
+    <!-- Bar chart -->
+    <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); margin-top:20px; padding:20px 24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin:-20px -24px 18px; padding:12px 24px; border-bottom:1px solid var(--border-subtle);">
+        <h3 style="margin:0; font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary);">Aggregation</h3>
+        <select class="ds-input ds-select" style="width:148px; height:36px;"><option>Technology</option><option>Industry</option><option>Location</option></select>
+      </div>
+      {{ barChartEl }}
+    </section>
+
+    <!-- Companies -->
+    <section style="background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-xl); box-shadow:var(--card-shadow-rest); margin-top:20px; overflow:hidden;">
+      <div style="padding:18px 24px 16px; border-bottom:1px solid var(--border-subtle);">
+        <h3 style="margin:0 0 16px; font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text-primary);">Companies</h3>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <div class="ds-search-input" style="flex:1; min-width:240px; max-width:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm10 2-4.35-4.35"></path></svg>
+            <input type="text" placeholder="Search companies..." value="{{ search }}" onInput="{{ onSearch }}" style="height:42px;">
+          </div>
+          <select class="ds-input ds-select" value="{{ industryFilter }}" onChange="{{ onIndustry }}" style="width:200px; height:42px;">
+            <option value="all">All Industries</option>
+            <option value="IT, technology and telecoms">IT, technology and telecoms</option>
+            <option value="Financial and utilities services">Financial and utilities services</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Retail and consumer goods">Retail and consumer goods</option>
+            <option value="Business and professional services">Business and professional services</option>
+          </select>
+          <select class="ds-input ds-select" value="{{ locationFilter }}" onChange="{{ onLocation }}" style="width:190px; height:42px;">
+            <option value="all">All Locations</option>
+            <option value="Worldwide">Worldwide</option>
+            <option value="North America">North America</option>
+            <option value="Europe">Europe</option>
+          </select>
+        </div>
+      </div>
+      <div data-scroll style="overflow-x:auto;">
+        <table class="co-table">
+          <thead>
+            <tr>
+              <th style="width:20%;">Company</th>
+              <th style="width:26%;">Location</th>
+              <th style="width:28%;">Industry</th>
+              <th style="width:14%;">Exposure</th>
+              <th>Risk Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ companyRows }}" as="c" hint-placeholder-count="5">
+              <tr class="sr-trow">
+                <td><a href="#" class="ch-link">{{ c.name }}</a></td>
+                <td>{{ c.location }}</td>
+                <td>{{ c.industry }}</td>
+                <td>{{ c.exposure }}</td>
+                <td><span style="display:inline-flex; align-items:center; justify-content:center; min-width:30px; padding:3px 9px; border-radius:var(--radius-pill); font-size:12px; font-weight:600; background:{{ c.riskBg }}; color:{{ c.riskFg }}; border:1px solid {{ c.riskBorder }};">{{ c.risk }}</span></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <sc-if value="{{ companiesEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center; padding:32px; color:var(--text-muted); font-size:13px;">No companies match your filters.</div>
+        </sc-if>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer style="padding:24px 28px 32px; display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--text-muted);">
+    <a href="#" class="ch-link">About Skytek</a>
+    <div>© 2025 Skytek Limited&nbsp;&nbsp;|&nbsp;&nbsp;Powered by <a href="#" class="ch-link">skytek</a></div>
+  </footer>
+
+  <!-- ===== Sidebar drawer + scrim ===== -->
+  <div onClick="{{ closeDrawer }}" class="ch-scrim {{ drawerCls }}" style="position:fixed; inset:0; z-index:40; background:rgba(15,23,42,.45);"></div>
+  <aside class="ch-drawer {{ drawerCls }}" data-scroll style="position:fixed; top:0; left:0; bottom:0; z-index:50; width:300px; background:var(--bg-surface); border-right:1px solid var(--border-default); box-shadow:var(--card-shadow-raised); display:flex; flex-direction:column; overflow-y:auto;">
+    <div style="display:flex; align-items:center; gap:10px; padding:20px 18px 16px;">
+      <img src="images/skytek-cyber-hub-logo-black-landscape.png" alt="Cyber Hub — powered by Skytek" class="ch-brand-logo" style="height:34px; width:auto; max-width:205px; object-fit:contain; margin-right:auto;">
+      <button onClick="{{ closeDrawer }}" aria-label="Close navigation" style="width:30px; height:30px; display:inline-grid; place-items:center; background:transparent; border:0; border-radius:var(--radius-md); color:var(--text-muted); cursor:pointer;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <nav style="padding:8px 14px; display:flex; flex-direction:column; gap:4px;">
+      <a href="Dashboard.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg>Dashboard
+      </a>
+      <a href="Reports.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8"></path></svg>Reports
+      </a>
+      <a href="SystemicRisk.html" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); background:var(--brand-600); color:#fff; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 2px 6px rgba(45,127,251,.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Systemic Risk
+      </a>
+      <a href="Companies.html" class="ch-navitem" style="display:flex; align-items:center; gap:12px; height:44px; padding:0 14px; border-radius:var(--radius-md); color:var(--text-secondary); font-size:14px; text-decoration:none;" style-hover="background:var(--slate-100); color:var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"></path></svg>Companies
+      </a>
+    </nav>
+
+    <div style="padding:18px 18px 6px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">My Report Activity</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <sc-for list="{{ stats }}" as="stat" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; background:var(--slate-50); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:{{ stat.bg }}; color:{{ stat.fg }};">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ stat.icon }}"></path></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:11.5px; color:var(--text-muted);">{{ stat.label }}</div>
+              <div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">{{ stat.value }}</div>
+              <div style="font-size:10.5px; color:var(--text-muted);">{{ stat.sub }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="padding:18px 18px 24px; margin-top:6px; border-top:1px solid var(--border-subtle);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">Subscription Details</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--info-100); color:var(--info-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription Start</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2024</div></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex-shrink:0; background:var(--danger-100); color:var(--danger-700);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M3 5h18v16H3zM8 3v4m8-4v4"></path></svg>
+          </div>
+          <div><div style="font-size:11.5px; color:var(--text-muted);">Subscription End</div><div style="font-family:var(--font-display); font-size:15px; font-weight:600; color:var(--text-primary);">June 1, 2025</div></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { drawerOpen: false, menuOpen: false, dark: false, portTab: "portfolios", expCat: "Size", search: "", industryFilter: "all", locationFilter: "all", lineHover: null, barHover: null, chartW: 1200, expandedGroups: {} };
+
+  toggleGroup(i) {
+    this.setState(s => ({ expandedGroups: { ...s.expandedGroups, [i]: !s.expandedGroups[i] } }));
+  }
+  toggleExp(n) {
+    this.setState(s => ({ expExpanded: { ...s.expExpanded, [n]: !(s.expExpanded || {})[n] } }));
+  }
+  toggleTech(n) {
+    this.setState(s => ({ techExpanded: { ...s.techExpanded, [n]: !(s.techExpanded || {})[n] } }));
+  }
+
+  componentDidMount() {
+    this._onResize = () => { if (this._chartNode) this.measureChart(this._chartNode); };
+    window.addEventListener("resize", this._onResize);
+    if (!window.Motion) {
+      let tries = 0;
+      this._motionPoll = setInterval(() => {
+        tries += 1;
+        if (window.Motion || tries > 50) {
+          clearInterval(this._motionPoll); this._motionPoll = null;
+          if (window.Motion) this.forceUpdate();
+        }
+      }, 100);
+    }
+  }
+  componentWillUnmount() { if (this._onResize) window.removeEventListener("resize", this._onResize); if (this._motionPoll) clearInterval(this._motionPoll); }
+
+  renderPortTabs() {
+    const Motion = window.Motion || window.framerMotion || window.FramerMotion;
+    const M = Motion ? Motion.motion : null;
+    const tabs = [
+      { key: "portfolios", label: "Portfolios" },
+      { key: "groups", label: "Portfolio Groups" },
+    ];
+    const active = this.state.portTab;
+    return React.createElement(
+      "div",
+      { className: "ds-tabs", style: { display: "flex", width: "100%" } },
+      tabs.map((t) => {
+        const isActive = active === t.key;
+        const kids = [];
+        if (isActive) {
+          kids.push(
+            M
+              ? React.createElement(M.span, { key: "pill", layoutId: "port-tab-pill", className: "ds-tab-pill", transition: { type: "spring", bounce: 0.2, duration: 0.6 } })
+              : React.createElement("span", { key: "pill", className: "ds-tab-pill" })
+          );
+        }
+        kids.push(React.createElement("span", { key: "label", className: "ds-tab-label" }, t.label));
+        return React.createElement(
+          "button",
+          { key: t.key, type: "button", className: "ds-tab", style: { flex: 1 }, "aria-selected": isActive, onClick: () => this.setState({ portTab: t.key }) },
+          kids
+        );
+      })
+    );
+  }
+  measureChart(node) {
+    if (!node) return;
+    this._chartNode = node;
+    const w = Math.round(node.getBoundingClientRect().width);
+    if (w && Math.abs(w - this.state.chartW) > 1) this.setState({ chartW: w });
+  }
+
+  renderVals() {
+    // ---- Portfolio Aggregation ----
+    const portfolios = [
+      { name: "SME companies", risk: "High", exposure: "$19.3M" },
+      { name: "Critical Infrastructure", risk: "Medium", exposure: "$15.2M" },
+      { name: "Cloud vendors", risk: "High", exposure: "$13.6M" },
+      { name: "Healthcare organisations", risk: "Low", exposure: "$12.0M" },
+      { name: "Industrial Manufacturing", risk: "Medium", exposure: "$9.8M" },
+      { name: "Financial services", risk: "High", exposure: "$7.4M" },
+    ];
+    const groups = [
+      { name: "Tech Holdings Group", risk: "High", exposure: "$48.1M", children: [
+        { name: "Cloud vendors", risk: "High", exposure: "$13.6M" },
+        { name: "SME companies", risk: "High", exposure: "$19.3M" },
+        { name: "Industrial Manufacturing", risk: "Medium", exposure: "$9.8M" },
+      ] },
+      { name: "Diversified Group", risk: "Medium", exposure: "$33.5M", children: [
+        { name: "Healthcare organisations", risk: "Low", exposure: "$12.0M" },
+        { name: "Financial services", risk: "High", exposure: "$7.4M" },
+      ] },
+      { name: "Income & Growth Group", risk: "Low", exposure: "$21.9M", children: [
+        { name: "Critical Infrastructure", risk: "Medium", exposure: "$15.2M" },
+      ] },
+      { name: "Global Macro Group", risk: "High", exposure: "$18.7M", children: [
+        { name: "SME companies", risk: "High", exposure: "$5.1M" },
+        { name: "Cloud vendors", risk: "High", exposure: "$13.6M" },
+      ] },
+    ];
+    const isPortfolios = this.state.portTab === "portfolios";
+    const expanded = this.state.expandedGroups || {};
+    const portfolioRowsBase = portfolios.map(p => ({ name: p.name, risk: p.risk, exposure: p.exposure, isGroup: false, indent: "0px", weight: 400, rot: "0deg", toggle: null }));
+    const groupRows = [];
+    groups.forEach((g, gi) => {
+      const open = !!expanded[gi];
+      groupRows.push({ name: g.name, risk: g.risk, exposure: g.exposure, isGroup: true, indent: "0px", weight: 600, rot: open ? "90deg" : "0deg", toggle: () => this.toggleGroup(gi) });
+      if (open) g.children.forEach(c => groupRows.push({ name: c.name, risk: c.risk, exposure: c.exposure, isGroup: false, indent: "24px", weight: 400, rot: "0deg", toggle: null }));
+    });
+
+    // ---- Exposure categories ----
+    const expData = {
+      "Industry Type": [
+        { name: "Cloud vendors", exposure: "$72.4M" },
+        { name: "SME companies", exposure: "$64.1M" },
+        { name: "Critical Infrastructure", exposure: "$58.9M" },
+        { name: "Healthcare organisations", exposure: "$49.7M" },
+        { name: "Industrial Manufacturing", exposure: "$44.5M" },
+      ],
+      "Size": [
+        { name: "Large enterprise", exposure: "$148.2M" },
+        { name: "Mid-market", exposure: "$92.6M" },
+        { name: "Small business", exposure: "$48.8M" },
+      ],
+      "Location": [
+        { name: "North America", exposure: "$131.0M" },
+        { name: "Europe", exposure: "$98.4M" },
+        { name: "Asia Pacific", exposure: "$60.2M" },
+      ],
+    };
+    const expExpanded = this.state.expExpanded || {};
+    const exposureCats = [];
+    ["Industry Type", "Size", "Location"].forEach(n => {
+      const open = !!expExpanded[n];
+      exposureCats.push({ name: n, isCat: true, exposure: "", indent: "12px", weight: 500, rot: open ? "90deg" : "0deg", cls: open ? "exp-row is-active" : "exp-row", go: () => this.toggleExp(n) });
+      if (open) expData[n].forEach(s => exposureCats.push({ name: s.name, isCat: false, exposure: s.exposure, indent: "46px", weight: 400, rot: "0deg", cls: "exp-row", go: null }));
+    });
+
+    // ---- Exposure By Technology ----
+    const techDefs = [
+      { name: "AWS", count: 12, exposure: "$67.8M" },
+      { name: "Azure", count: 10, exposure: "$58.4M" },
+      { name: "GCP", count: 9, exposure: "$39.2M" },
+      { name: "WordPress", count: 8, exposure: "$35.1M" },
+      { name: "Apache", count: 7, exposure: "$28.9M" },
+      { name: "NGINX", count: 6, exposure: "$24.3M" },
+      { name: "Atlassian", count: 5, exposure: "$22.7M" },
+      { name: "Drupal", count: 4, exposure: "$18.5M" },
+    ];
+    const coPool = ["Northwind Trading", "Acme Logistics", "Vertex Health", "Meridian Bank", "Cobalt Systems", "Harbor Freight Co", "Sentinel Power", "Orion Retail", "Lakeside Manufacturing", "Bluewave Telecom", "Granite Insurance", "Pioneer Energy", "Summit Pharma", "Delta Foods", "Ironclad Security", "Evergreen Utilities", "Atlas Shipping", "Nimbus Cloud Co", "Quartz Media", "Falcon Aerospace"];
+    const coMeta = {
+      "Northwind Trading": { w: "www.northwindtrading.com", ind: "Wholesale & distribution", co: "United Kingdom", d: "A wholesale trading group supplying retail and hospitality clients across Europe with consumer goods, logistics and supply-chain services." },
+      "Acme Logistics": { w: "www.acmelogistics.com", ind: "Transport & logistics", co: "Germany", d: "A freight and last-mile logistics provider operating warehousing, fulfilment and cross-border delivery networks throughout the EU." },
+      "Vertex Health": { w: "www.vertexhealth.com", ind: "Healthcare", co: "United States", d: "A healthcare network running hospitals, clinics and a patient-records platform serving several million members nationwide." },
+      "Meridian Bank": { w: "www.meridianbank.com", ind: "Banking & financial services", co: "United States", d: "A retail and commercial bank offering deposits, lending and digital banking to consumers and small businesses." },
+      "Cobalt Systems": { w: "www.cobaltsystems.io", ind: "Software & IT services", co: "Ireland", d: "An enterprise software vendor building workflow, identity and data-integration tools for mid-market and enterprise customers." },
+      "Harbor Freight Co": { w: "www.harborfreightco.com", ind: "Transport & logistics", co: "Netherlands", d: "A maritime freight forwarder handling container shipping, customs brokerage and port operations across northern Europe." },
+      "Sentinel Power": { w: "www.sentinelpower.com", ind: "Energy & utilities", co: "United Kingdom", d: "A power generation and grid-services company operating renewable and conventional assets supplying the national grid." },
+      "Orion Retail": { w: "www.orionretail.com", ind: "Retail & e-commerce", co: "France", d: "An omnichannel retailer running physical stores and an e-commerce platform across the apparel and homeware categories." },
+      "Lakeside Manufacturing": { w: "www.lakesidemfg.com", ind: "Industrial manufacturing", co: "Germany", d: "A precision-components manufacturer supplying the automotive, aerospace and industrial-equipment supply chains." },
+      "Bluewave Telecom": { w: "www.bluewavetelecom.com", ind: "Telecommunications", co: "Spain", d: "A fixed and mobile telecommunications operator providing broadband, voice and managed connectivity to consumers and businesses." },
+      "Granite Insurance": { w: "www.graniteinsurance.com", ind: "Insurance", co: "United States", d: "A property and casualty insurer underwriting commercial and personal lines with a growing digital claims platform." },
+      "Pioneer Energy": { w: "www.pioneerenergy.com", ind: "Energy & utilities", co: "Norway", d: "An energy company operating offshore and onshore assets alongside a transition portfolio of renewable generation projects." },
+      "Summit Pharma": { w: "www.summitpharma.com", ind: "Pharmaceuticals", co: "Switzerland", d: "A pharmaceutical developer and manufacturer with a portfolio spanning specialty therapeutics and contract manufacturing." },
+      "Delta Foods": { w: "www.deltafoods.com", ind: "Food & beverage", co: "Ireland", d: "A food processing and distribution group producing packaged goods for retail and foodservice customers across Europe." },
+      "Ironclad Security": { w: "www.ironcladsecurity.com", ind: "Security services", co: "United Kingdom", d: "A physical and managed-security provider offering monitoring, guarding and integrated security technology to enterprises." },
+      "Evergreen Utilities": { w: "www.evergreenutilities.com", ind: "Energy & utilities", co: "United States", d: "A regional water and gas utility operating distribution networks and metering infrastructure for residential customers." },
+      "Atlas Shipping": { w: "www.atlasshipping.com", ind: "Transport & logistics", co: "Greece", d: "A global shipping operator managing a fleet of bulk and container vessels with port and terminal interests." },
+      "Nimbus Cloud Co": { w: "www.nimbuscloud.io", ind: "Software & IT services", co: "United States", d: "A cloud infrastructure provider offering compute, storage and platform services to startups and enterprise customers." },
+      "Quartz Media": { w: "www.quartzmedia.com", ind: "Media, leisure, entertainment", co: "United Kingdom", d: "A digital media group operating publishing, streaming and advertising businesses across web and mobile platforms." },
+      "Falcon Aerospace": { w: "www.falconaerospace.com", ind: "Aerospace & defence", co: "United States", d: "An aerospace supplier designing and manufacturing avionics, components and systems for commercial and defence aircraft." },
+    };
+    const splitExposure = (totalStr, n) => {
+      const total = parseFloat(totalStr.replace(/[^0-9.]/g, ""));
+      let sum = 0; const weights = [];
+      for (let i = 0; i < n; i++) { const w = n - i; weights.push(w); sum += w; }
+      return weights.map(w => "$" + (total * w / sum).toFixed(1) + "M");
+    };
+    const techExpanded = this.state.techExpanded || {};
+    let coIdx = 0;
+    const techRows = [];
+    techDefs.forEach(t => {
+      const open = !!techExpanded[t.name];
+      techRows.push({ name: t.name + " (" + t.count + ")", exposure: t.exposure, isTech: true, indent: "8px", weight: 500, rot: open ? "90deg" : "0deg", cursor: "pointer", toggle: () => this.toggleTech(t.name) });
+      if (open) {
+        const vals = splitExposure(t.exposure, t.count);
+        for (let i = 0; i < t.count; i++) {
+          const coName = coPool[coIdx % coPool.length];
+          const m = coMeta[coName] || {};
+          const params = new URLSearchParams({ c: coName, w: m.w || "", ind: m.ind || "", co: m.co || "", d: m.d || "" });
+          techRows.push({ name: coName, href: "CompanyReport.html?" + params.toString(), exposure: vals[i], isTech: false, isCompany: true, indent: "38px", weight: 400, rot: "0deg", cursor: "default", toggle: null });
+          coIdx += 1;
+        }
+      }
+    });
+
+    // ---- Alerts ----
+    const sevClass = (s) => s === "High" ? "ds-badge--danger" : s === "Medium" ? "ds-badge--neutral" : "ds-badge--success";
+    const alertRows = [
+      { cve: "CVE-2024-4845", date: "2024-06-12", policies: "8", severity: "High" },
+      { cve: "CVE-2024-5543", date: "2024-06-12", policies: "8", severity: "High" },
+      { cve: "CVE-2024-37235", date: "2024-06-17", policies: "3", severity: "High" },
+      { cve: "CVE-2024-6789", date: "2024-06-15", policies: "12", severity: "Medium" },
+      { cve: "CVE-2024-8021", date: "2024-06-18", policies: "5", severity: "High" },
+      { cve: "CVE-2024-9134", date: "2024-06-20", policies: "2", severity: "Low" },
+    ].map(a => ({ ...a, sevClass: sevClass(a.severity) }));
+
+    // ---- Line chart ----
+    const W = this.state.chartW;
+    const lineRaw = [276, 285, 289, 282, 297, 291, 306, 304, 319, 315, 330, 326];
+    const months = ["Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025"];
+    const lMinX = 60, lMaxX = W - 15, lTop = 18, lBot = 262, lMinV = 275, lMaxV = 334;
+    const lx = (i) => lMinX + (lMaxX - lMinX) * i / (lineRaw.length - 1);
+    const ly = (v) => lTop + (lBot - lTop) * (lMaxV - v) / (lMaxV - lMinV);
+    const hoverIdx = this.state.lineHover;
+    const linePoints = lineRaw.map((v, i) => ({
+      x: +lx(i).toFixed(1), y: +ly(v).toFixed(1), month: months[i],
+      r: hoverIdx === i ? 6 : 4,
+      onEnter: () => this.setState({ lineHover: i }),
+      onLeave: () => this.setState(s => (s.lineHover === i ? { lineHover: null } : null)),
+    }));
+    const linePath = linePoints.map((p, i) => (i ? "L" : "M") + p.x + " " + p.y).join(" ");
+    const lineTicks = [334, 319, 304, 289, 275].map(t => { const y = +ly(t).toFixed(1); return { y, ty: y + 4, label: "$" + t + "M" }; });
+
+    const E = React.createElement;
+    const axisFont = { fontSize: "12px", fill: "var(--text-muted)", fontFamily: "var(--font-sans)" };
+    const gridEls = lineTicks.flatMap((g, i) => [
+      E("line", { key: "gl" + i, x1: 58, x2: W - 15, y1: g.y, y2: g.y, stroke: "var(--slate-150)", strokeWidth: 1, strokeDasharray: "3 6" }),
+      E("text", { key: "gt" + i, x: 48, y: g.ty, textAnchor: "end", style: axisFont }, g.label),
+    ]);
+    const pathEl = E("path", { d: linePath, fill: "none", stroke: "var(--brand-600)", strokeWidth: 2.5, strokeLinecap: "round", strokeLinejoin: "round" });
+    const nodeEls = linePoints.map((p, i) => E("g", { key: "n" + i },
+      E("text", { x: p.x, y: 288, textAnchor: "middle", transform: "rotate(-24 " + p.x + " 288)", style: axisFont }, p.month),
+      E("circle", { cx: p.x, cy: p.y, r: p.r, fill: "var(--brand-600)", stroke: "var(--bg-surface)", strokeWidth: 2 }),
+      E("circle", { cx: p.x, cy: p.y, r: 16, fill: "transparent", style: { cursor: "pointer" }, onMouseEnter: p.onEnter, onMouseLeave: p.onLeave }),
+    ));
+    let tipEl = null;
+    if (hoverIdx != null) {
+      const px = +lx(hoverIdx).toFixed(1), py = +ly(lineRaw[hoverIdx]).toFixed(1);
+      const boxW = 132, boxH = 50;
+      const boxX = Math.max(2, Math.min(px - boxW / 2, W - 2 - boxW));
+      let boxY = py - boxH - 14;
+      if (boxY < 2) boxY = py + 16;
+      const cx = boxX + boxW / 2;
+      tipEl = E("g", { style: { pointerEvents: "none" } },
+        E("rect", { x: boxX, y: boxY, width: boxW, height: boxH, rx: 8, fill: "var(--text-primary)" }),
+        E("text", { x: cx, y: boxY + 19, textAnchor: "middle", style: { fontSize: "12px", fill: "var(--bg-surface)", fontFamily: "var(--font-sans)", opacity: 0.75 } }, months[hoverIdx]),
+        E("text", { x: cx, y: boxY + 38, textAnchor: "middle", style: { fontSize: "15px", fontWeight: 600, fill: "var(--bg-surface)", fontFamily: "var(--font-display)" } }, "$" + lineRaw[hoverIdx] + "M"),
+      );
+    }
+    const lineChartEl = E("svg", { ref: (n) => this.measureChart(n), viewBox: "0 0 " + W + " 300", style: { width: "100%", height: "auto", display: "block", overflow: "visible" } }, gridEls, pathEl, nodeEls, tipEl);
+
+    // ---- Bar chart ----
+    const barRaw = [["AWS", 34], ["Azure", 31], ["GCP", 15], ["NGINX", 13], ["Atlassian", 11], ["WordPress", 8], ["Drupal", 6], ["Apache", 4]];
+    const bMinX = 42, bMaxX = W - 10, bTop = 18, bBot = 250, bMaxV = 60;
+    const slot = (bMaxX - bMinX) / barRaw.length;
+    const barW = slot * 0.5;
+    const barHover = this.state.barHover;
+    const barBars = barRaw.map(([label, v], i) => {
+      const cx = bMinX + slot * (i + 0.5);
+      const h = (v / bMaxV) * (bBot - bTop);
+      return { label, v, cx: +cx.toFixed(1), x: +(cx - barW / 2).toFixed(1), w: +barW.toFixed(1), y: +(bBot - h).toFixed(1), h: +h.toFixed(1) };
+    });
+    const barTicks = [60, 48, 36, 24, 12, 0].map(t => { const y = +(bTop + (bBot - bTop) * (bMaxV - t) / bMaxV).toFixed(1); return { y, ty: y + 4, label: String(t) }; });
+    const Eb = React.createElement;
+    const barGridEls = barTicks.flatMap((g, i) => [
+      Eb("line", { key: "bl" + i, x1: 42, x2: W - 10, y1: g.y, y2: g.y, stroke: "var(--slate-150)", strokeWidth: 1, strokeDasharray: "3 6" }),
+      Eb("text", { key: "bt" + i, x: 30, y: g.ty, textAnchor: "end", style: { fontSize: "12px", fill: "var(--text-muted)", fontFamily: "var(--font-sans)" } }, g.label),
+    ]);
+    const barBarEls = barBars.map((b, i) => Eb("g", { key: "bb" + i },
+      Eb("rect", { x: b.x, y: b.y, width: b.w, height: b.h, rx: 4, fill: barHover === i ? "var(--brand-700)" : "var(--brand-600)" }),
+      Eb("text", { x: b.cx, y: 276, textAnchor: "middle", style: { fontSize: "12px", fill: "var(--text-secondary)", fontFamily: "var(--font-sans)" } }, b.label),
+      Eb("rect", { x: b.cx - slot / 2, y: bTop, width: slot, height: bBot - bTop, fill: "transparent", style: { cursor: "pointer" }, onMouseEnter: () => this.setState({ barHover: i }), onMouseLeave: () => this.setState(s => (s.barHover === i ? { barHover: null } : null)) }),
+    ));
+    let barTipEl = null;
+    if (barHover != null) {
+      const b = barBars[barHover];
+      const boxW = 120, boxH = 50;
+      const bx = Math.max(2, Math.min(b.cx - boxW / 2, W - 2 - boxW));
+      let by = b.y - boxH - 12;
+      if (by < 2) by = b.y + 12;
+      const bcx = bx + boxW / 2;
+      barTipEl = Eb("g", { style: { pointerEvents: "none" } },
+        Eb("rect", { x: bx, y: by, width: boxW, height: boxH, rx: 8, fill: "var(--text-primary)" }),
+        Eb("text", { x: bcx, y: by + 19, textAnchor: "middle", style: { fontSize: "12px", fill: "var(--bg-surface)", fontFamily: "var(--font-sans)", opacity: 0.75 } }, b.label),
+        Eb("text", { x: bcx, y: by + 38, textAnchor: "middle", style: { fontSize: "15px", fontWeight: 600, fill: "var(--bg-surface)", fontFamily: "var(--font-display)" } }, b.v + " companies"),
+      );
+    }
+    const barChartEl = Eb("svg", { viewBox: "0 0 " + W + " 300", style: { width: "100%", height: "auto", display: "block", overflow: "visible" } }, barGridEls, barBarEls, barTipEl);
+
+    // ---- Companies ----
+    const companies = [
+      { name: "Nucleus Devices", location: "North America", industry: "Financial and utilities services", exposure: "$3.2M", risk: 90 },
+      { name: "Brightline Consulting", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$747.0K", risk: 53 },
+      { name: "Keystone Staffing", location: "Africa, North America, South America, Europe", industry: "Business and professional services", exposure: "$8.5M", risk: 40 },
+      { name: "Coreware Systems", location: "Worldwide", industry: "IT, technology and telecoms", exposure: "$9.2M", risk: 78 },
+      { name: "Helix Industrials", location: "Worldwide", industry: "Healthcare", exposure: "$5.9M", risk: 96 },
+      { name: "Vertex Commerce", location: "Worldwide", industry: "Retail and consumer goods", exposure: "$4.1M", risk: 67 },
+      { name: "Sterling Capital", location: "North America", industry: "Financial and utilities services", exposure: "$5.2M", risk: 43 },
+    ];
+    const q = this.state.search.trim().toLowerCase();
+    const riskPill = (score) => score >= 70
+      ? { riskBg: "var(--danger-500)", riskFg: "#fff", riskBorder: "var(--danger-500)" }
+      : { riskBg: "var(--bg-surface)", riskFg: "var(--text-primary)", riskBorder: "var(--border-default)" };
+    const companyRows = companies.filter(c => {
+      if (q && !c.name.toLowerCase().includes(q)) return false;
+      if (this.state.industryFilter !== "all" && c.industry !== this.state.industryFilter) return false;
+      if (this.state.locationFilter !== "all" && !c.location.includes(this.state.locationFilter)) return false;
+      return true;
+    }).map(c => ({ ...c, ...riskPill(c.risk) }));
+
+    const stats = [
+      { label: "Reports Generated", value: "8", sub: "", icon: "M3 3v18h18M18 17V9M13 17V5M8 17v-3", bg: "var(--brand-100)", fg: "var(--brand-600)" },
+      { label: "Avg. Scan Time", value: "2h 45m", sub: "", icon: "M12 6v6l4 2M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z", bg: "var(--success-100)", fg: "var(--success-700)" },
+      { label: "Total Monthly Allowance", value: "50 Hours", sub: "", icon: "M10 2h4M12 14l2.5-2.5M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z", bg: "var(--info-100)", fg: "var(--info-700)" },
+      { label: "Time Remaining", value: "28h 15m", sub: "Renews Dec 1, 2024", icon: "M5 22h14M5 2h14M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4A2 2 0 0 0 7 17.8V22", bg: "var(--warning-100)", fg: "var(--warning-700)" },
+    ];
+
+    const open = this.state.drawerOpen;
+    return {
+      portfolioRows: isPortfolios ? portfolioRowsBase : groupRows,
+      portTabs: this.renderPortTabs(),
+      exposureCats,
+      techRows,
+      alertRows,
+      linePath, linePoints, lineTicks, lineChartEl,
+      barBars, barTicks, barChartEl,
+      companyRows,
+      companiesEmpty: companyRows.length === 0,
+      search: this.state.search,
+      industryFilter: this.state.industryFilter,
+      locationFilter: this.state.locationFilter,
+      onSearch: (e) => this.setState({ search: e.target.value }),
+      onIndustry: (e) => this.setState({ industryFilter: e.target.value }),
+      onLocation: (e) => this.setState({ locationFilter: e.target.value }),
+      stats,
+      themeAttr: this.state.dark ? "dark" : "",
+      themeIcon: this.state.dark
+        ? "M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+        : "M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z",
+      drawerCls: open ? "is-open" : "",
+      menuCls: this.state.menuOpen ? "is-open" : "",
+      toggleDrawer: () => this.setState(s => ({ drawerOpen: !s.drawerOpen })),
+      closeDrawer: () => this.setState({ drawerOpen: false }),
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      toggleTheme: () => this.setState(s => ({ dark: !s.dark })),
+    };
+  }
+}
+</script>
+</body>
+</html>
